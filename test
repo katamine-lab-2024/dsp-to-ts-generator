@@ -1,0 +1,11 @@
+for({B: real, E: real, S: real}, {N: real})
+	method
+		when(B =< E);
+		N: real = B;
+	end method;
+	method
+		when(B+S =< E);
+		B1: real = B+S;
+		call(for, {B1, E, S}, {N});
+	end method;
+end;
