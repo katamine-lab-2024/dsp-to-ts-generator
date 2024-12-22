@@ -1,19 +1,27 @@
 import type {
   AssignNode,
+  BlockNode,
   BuildInNode,
   Expr,
   Member,
   ModuleNode,
   ParamNode,
+  Primary,
   Program,
-  Stmt,
-  Type,
-  TypeKind,
+  StmtExpr,
+  StmtNode,
   VarNode,
 } from "./types/ast";
 import type { CompileError } from "./types/error";
 import type { Token, TokenType } from "./types/token";
-import { NODE_TYPE, TOKEN_TYPE } from "./constant";
+import {
+  NODE_TYPE,
+  OP_TYPE,
+  SIMPLE_TYPE,
+  STRUCT_TYPE,
+  TOKEN_TYPE,
+} from "./constant";
+import type { Type, TypeKind } from "./types/type";
 
 // 構文解析の結果
 export type ParseResult = {
@@ -23,13 +31,17 @@ export type ParseResult = {
 
 // ローカル変数
 type LocalVar = {
+  // モジュール名や引数に渡されたモジュール名
   fname: string[];
+  // 変数
   varList: VarNode[];
 };
 
 // スコープ
 type Scope = {
+  // module内のscope
   module: VarNode[];
+  // block内のscope
   block: VarNode[];
 };
 
@@ -148,21 +160,20 @@ export class Parser {
           message: `Variable ${JSON.stringify(
             tok.value
           )} is already defined as ${fv.valueType.type}.`,
-          position: ty.position,
+          position: ty.token.position,
         });
         return {
           type: NODE_TYPE.VAR,
-          name: "Dummy",
+          name: "dummy",
           token: tok,
           valueType: {
-            type: "Dummy",
-            position: ty.position,
+            type: "dummy",
+            token: tok,
           },
         };
       }
       return fv;
     }
-
     const v: VarNode = {
       type: NODE_TYPE.VAR,
       name: tok.value,
@@ -170,7 +181,6 @@ export class Parser {
       token: tok,
     };
     this.localVarList.varList.push(v);
-
     if (isBlock) {
       this.scope.block.push(v);
     } else {
@@ -199,16 +209,17 @@ export class Parser {
   }
 
   /**
-   * 内容が型名かどうか判定
-   * @returns {boolean} 型名の場合はtrue
+   * 単純変数の型名かどうか判定
+   * @returns {boolean}
    */
-  isTypeName(): boolean {
-    return (
-      this.isCurrent("integer") ||
-      this.isCurrent("real") ||
-      this.isCurrent("atom") ||
-      this.isCurrent("bool")
-    );
+  isSimpleTypeName(): boolean {
+    // 単純変数
+    for (const t of Object.values(SIMPLE_TYPE)) {
+      if (this.isCurrent(t)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -216,21 +227,68 @@ export class Parser {
    * @returns {Type} 型
    */
   parseType(): Type {
-    const cur = this.peek();
-    if (this.isTypeName()) {
+    const tok = this.peek();
+    // 単純変数
+    if (this.isSimpleTypeName()) {
       this.next();
       return {
-        type: cur.value as TypeKind,
-        position: cur.position,
+        type: tok.value as TypeKind,
+        token: tok,
       };
     }
+    // リスト
+    if (this.isCurrent("[")) {
+      this.next();
+      const member: Type[] = [];
+      if (
+        this.isSimpleTypeName() ||
+        this.isCurrent("[") ||
+        this.isCurrent("{")
+      ) {
+        member.push(this.parseType());
+        while (this.isCurrent(",")) {
+          this.next();
+          member.push(this.parseType());
+        }
+      }
+      this.consume("]");
+      return {
+        type: STRUCT_TYPE.LIST,
+        member: member,
+        token: tok,
+      };
+    }
+    // ベクトル
+    if (this.isCurrent("{")) {
+      this.next();
+      const member: Type[] = [];
+      if (
+        this.isSimpleTypeName() ||
+        this.isCurrent("[") ||
+        this.isCurrent("{")
+      ) {
+        member.push(this.parseType());
+        while (this.isCurrent(",")) {
+          this.next();
+          member.push(this.parseType());
+        }
+      }
+      this.consume("}");
+      return {
+        type: STRUCT_TYPE.VECTOR,
+        member: member,
+        token: tok,
+      };
+    }
+    // エラー
     this.errorList.push({
-      message: `Expected type, but got ${JSON.stringify(cur.value)}.`,
-      position: cur.position,
+      message: `Expected type, but got ${JSON.stringify(tok.value)}.`,
+      position: tok.position,
     });
+    this.next();
     return {
-      type: "Dummy",
-      position: cur.position,
+      type: "dummy",
+      token: tok,
     };
   }
 
@@ -249,7 +307,6 @@ export class Parser {
     };
     const tok = this.peek();
     let name: string;
-
     if (
       this.isCurrent(TOKEN_TYPE.IDENT_FUNC) ||
       this.isCurrent(TOKEN_TYPE.RESERVED)
@@ -264,11 +321,10 @@ export class Parser {
       name = "dummy";
     }
     this.next();
-
     const params = this.parseParams();
-    const stmt: Stmt[] = [];
+    const block: BlockNode[] = [];
     while (!this.isCurrent("end")) {
-      stmt.push(this.parseStmt());
+      block.push(this.parseBlock());
     }
     this.next();
     if (this.isCurrent("module")) {
@@ -280,7 +336,7 @@ export class Parser {
       token: tok,
       name: name,
       paramList: params,
-      body: stmt,
+      body: block,
       localList: this.localVarList.varList,
     };
   }
@@ -309,7 +365,6 @@ export class Parser {
    */
   parseParam(): ParamNode {
     const tok = this.peek();
-
     // ここのatomはモジュール名
     if (this.isCurrent(TOKEN_TYPE.ATOM)) {
       this.next();
@@ -323,7 +378,6 @@ export class Parser {
         },
       };
     }
-
     if (this.isCurrent("{")) {
       const vector = this.parsePrimary();
       if (vector.type !== NODE_TYPE.VECTOR) {
@@ -341,7 +395,14 @@ export class Parser {
       // memberをpushVar
       for (const m of vector.member) {
         if (m.type === NODE_TYPE.MEMBER) {
-          this.pushVar(m.token, m.value as Type, false);
+          const ty: Type =
+            m.value.type === NODE_TYPE.VAR
+              ? m.value.valueType
+              : {
+                  type: "dummy",
+                  token: m.token,
+                };
+          this.pushVar(m.token, ty, false);
         }
       }
       return {
@@ -350,7 +411,6 @@ export class Parser {
         value: vector.member,
       };
     }
-
     this.errorList.push({
       message: `Expected parameter, but got ${JSON.stringify(tok.value)}.`,
       position: tok.position,
@@ -361,57 +421,17 @@ export class Parser {
     };
   }
 
-  /**
-   * `stmt = "method" *stmt "end" "method" ";"
-   *        | build-in ";"`
-   * @returns {Stmt} 文
-   */
-  parseStmt(): Stmt {
+  parseBlock(): BlockNode {
     const tok = this.peek();
-
-    if (this.isCurrent("method")) {
-      this.scope.block = [];
-      const stmt: Stmt[] = [];
-      this.next();
-      while (!this.isCurrent("end")) {
-        stmt.push(this.parseStmt());
-      }
-      this.next();
-      this.consume("method");
-      if (!this.isCurrent(";")) {
-        const cur = this.peek();
-        if (this.isCurrent(TOKEN_TYPE.EOF)) {
-          this.errorList.push({
-            message: `Expected ;, but got ${JSON.stringify(cur.value)}.`,
-            position: {
-              line: cur.position.line - 1,
-              character: cur.position.character,
-            },
-          });
-          return {
-            type: NODE_TYPE.DUMMY,
-            token: cur,
-          };
-        }
-        this.errorList.push({
-          message: `Expected ;, but got ${JSON.stringify(cur.value)}.`,
-          position: cur.position,
-        });
-        this.next();
-        return {
-          type: NODE_TYPE.DUMMY,
-          token: cur,
-        };
-      }
-      this.next();
-      return {
-        type: NODE_TYPE.BLOCK,
-        body: stmt,
-        token: tok,
-      };
+    this.expect("method");
+    this.scope.block = [];
+    const stmt: StmtNode[] = [];
+    this.next();
+    while (!this.isCurrent("end")) {
+      stmt.push(this.parseStmt());
     }
-
-    const expr: BuildInNode = this.parseBuildIn();
+    this.next();
+    this.consume("method");
     if (!this.isCurrent(";")) {
       const cur = this.peek();
       if (this.isCurrent(TOKEN_TYPE.EOF)) {
@@ -439,43 +459,62 @@ export class Parser {
     }
     this.next();
     return {
-      type: NODE_TYPE.EXPR_STMT,
-      expr: expr,
+      type: NODE_TYPE.BLOCK,
+      body: stmt,
       token: tok,
     };
   }
 
   /**
-   * `build-in = "for" "(" expr "," expr "," expr ")"
-   *           | "test" "(" expr ")"
-   *           | "when" "(" expr ")"
-   *           | "sqrt" "(" expr ")"
-   *           | "call" "(" atom "," expr "," expr ")"
-   *           | expr`
-   * @returns {BuildInNode} 組み込み関数
+   * `stmt = stmt_expr ";"`
+   * @returns {StmtNode} 文
    */
-  parseBuildIn(): BuildInNode {
+  parseStmt(): StmtNode {
     const tok = this.peek();
-
-    // "for" "(" expr "," expr "," expr ")"
-    if (this.isCurrent("for")) {
+    // stmt_expr ";"
+    const stmt: StmtExpr = this.parseStmtExpr();
+    if (!this.isCurrent(";")) {
+      const cur = this.peek();
+      if (this.isCurrent(TOKEN_TYPE.EOF)) {
+        this.errorList.push({
+          message: `Expected ;, but got ${JSON.stringify(cur.value)}.`,
+          position: {
+            line: cur.position.line - 1,
+            character: cur.position.character,
+          },
+        });
+        return {
+          type: NODE_TYPE.DUMMY,
+          token: cur,
+        };
+      }
+      this.errorList.push({
+        message: `Expected ;, but got ${JSON.stringify(cur.value)}.`,
+        position: cur.position,
+      });
       this.next();
-      this.consume("(");
-      const from = this.parseExpr();
-      this.consume(",");
-      const to = this.parseExpr();
-      this.consume(",");
-      const inc = this.parseExpr();
-      this.consume(")");
       return {
-        type: NODE_TYPE.FOR,
-        from: from,
-        to: to,
-        inc: inc,
-        token: tok,
+        type: NODE_TYPE.DUMMY,
+        token: cur,
       };
     }
+    this.next();
+    return {
+      type: NODE_TYPE.STMT,
+      stmt: stmt,
+      token: tok,
+    };
+  }
 
+  /**
+   * `stmt_expr = "test" "(" expr ")"
+   *          | "when" "(" expr ")"
+   *          | "call" "(" atom "," expr "," expr ")"
+   *          | assign`
+   * @returns {Stmt} 文
+   */
+  parseStmtExpr(): StmtExpr {
+    const tok = this.peek();
     // "test" "(" expr ")"
     if (this.isCurrent("test")) {
       this.next();
@@ -488,7 +527,6 @@ export class Parser {
         token: tok,
       };
     }
-
     // "when" "(" expr ")"
     if (this.isCurrent("when")) {
       this.next();
@@ -501,25 +539,10 @@ export class Parser {
         token: tok,
       };
     }
-
-    // "sqrt" "(" expr ")"
-    if (this.isCurrent("sqrt")) {
-      this.next();
-      this.consume("(");
-      const expr = this.parseExpr();
-      this.consume(")");
-      return {
-        type: NODE_TYPE.SQRT,
-        expr: expr,
-        token: tok,
-      };
-    }
-
     // "call" "(" atom "," expr "," expr ")"
     if (this.isCurrent("call")) {
       this.next();
       this.consume("(");
-
       let mname = "";
       if (
         this.isCurrent(TOKEN_TYPE.ATOM) ||
@@ -551,7 +574,6 @@ export class Parser {
         mname = "dummy";
       }
       this.next();
-
       this.consume(",");
       const input = this.parseExpr();
       this.consume(",");
@@ -565,39 +587,75 @@ export class Parser {
         token: tok,
       };
     }
+    // assign
+    return this.parseAssign();
+  }
 
+  /**
+   * `assign = primary ?(":" type )"=" build-in`
+   * @returns {Expr} 代入式
+   */
+  parseAssign(): AssignNode {
+    const tok = this.peek();
+    const expr = this.parsePrimary();
+    this.consume("=");
+    const assign: AssignNode = {
+      type: NODE_TYPE.ASSIGN,
+      lhs: expr as Primary,
+      rhs: this.parseBuildIn(),
+      token: tok,
+    };
+    return assign;
+  }
+
+  /**
+   * `build_in = "for" "(" expr "," expr "," expr ")"
+   *            | "sqrt" "(" expr ")"
+   *            | expr`
+   * @returns {BuildInNode} 組み込み関数
+   */
+  parseBuildIn(): BuildInNode {
+    const tok = this.peek();
+    // "for" "(" expr "," expr "," expr ")"
+    if (this.isCurrent("for")) {
+      this.next();
+      this.consume("(");
+      const from = this.parseExpr();
+      this.consume(",");
+      const to = this.parseExpr();
+      this.consume(",");
+      const inc = this.parseExpr();
+      this.consume(")");
+      return {
+        type: NODE_TYPE.FOR,
+        from: from,
+        to: to,
+        inc: inc,
+        token: tok,
+      };
+    }
+    // "sqrt" "(" expr ")"
+    if (this.isCurrent("sqrt")) {
+      this.next();
+      this.consume("(");
+      const expr = this.parseExpr();
+      this.consume(")");
+      return {
+        type: NODE_TYPE.SQRT,
+        expr: expr,
+        token: tok,
+      };
+    }
     // expr
     return this.parseExpr();
   }
 
   /**
-   * `expr = assign`
+   * `expr = logical`
    * @returns {Expr} 式
    */
   parseExpr(): Expr {
-    return this.parseAssign();
-  }
-
-  /**
-   * `assign = logical ?("=" build-in)`
-   * @returns {Expr} 代入式
-   */
-  parseAssign(): Expr {
-    const tok = this.peek();
-    const expr = this.parseLogical();
-
-    if (this.isCurrent("=")) {
-      this.next();
-      const assign: AssignNode = {
-        type: NODE_TYPE.ASSIGN,
-        lhs: expr,
-        rhs: this.parseBuildIn(),
-        token: tok,
-      };
-      return assign;
-    }
-
-    return expr;
+    return this.parseLogical();
   }
 
   /**
@@ -607,13 +665,13 @@ export class Parser {
   parseLogical(): Expr {
     const node = this.parseTerm();
     let token: Token;
-
     for (;;) {
       if (this.isCurrent("or")) {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.OR,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.OR,
           lhs: node,
           rhs: this.parseTerm(),
           token: token,
@@ -630,13 +688,13 @@ export class Parser {
   parseTerm(): Expr {
     const node = this.parseNotTerm();
     let token: Token;
-
     for (;;) {
       if (this.isCurrent("and")) {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.AND,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.AND,
           lhs: node,
           rhs: this.parseNotTerm(),
           token: token,
@@ -652,13 +710,13 @@ export class Parser {
    */
   parseNotTerm(): Expr {
     if (this.isCurrent("not")) {
-      const token = this.peek();
-      this.next();
+      const token = this.consume("not");
       this.consume("(");
       const expr = this.parseEquality();
       this.consume(")");
       return {
-        type: NODE_TYPE.NOT,
+        type: NODE_TYPE.CALL_EXPR,
+        callee: OP_TYPE.NOT,
         lhs: expr,
         token: token,
       };
@@ -673,13 +731,13 @@ export class Parser {
   parseEquality(): Expr {
     const node = this.parseRelational();
     let token: Token;
-
     for (;;) {
       if (this.isCurrent("==")) {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.EQ,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.EQ,
           lhs: node,
           rhs: this.parseRelational(),
           token: token,
@@ -689,7 +747,8 @@ export class Parser {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.NE,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.NE,
           lhs: node,
           rhs: this.parseRelational(),
           token: token,
@@ -706,13 +765,13 @@ export class Parser {
   parseRelational(): Expr {
     const node = this.parseAdd();
     let token: Token;
-
     for (;;) {
       if (this.isCurrent("<")) {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.LT,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.LT,
           lhs: node,
           rhs: this.parseAdd(),
           token: token,
@@ -722,7 +781,8 @@ export class Parser {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.LE,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.LE,
           lhs: node,
           rhs: this.parseAdd(),
           token: token,
@@ -732,7 +792,8 @@ export class Parser {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.LT,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.LT,
           lhs: this.parseAdd(),
           rhs: node,
           token: token,
@@ -742,7 +803,8 @@ export class Parser {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.LE,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.LE,
           lhs: this.parseAdd(),
           rhs: node,
           token: token,
@@ -759,13 +821,13 @@ export class Parser {
   parseAdd(): Expr {
     const node = this.parseMul();
     let token: Token;
-
     for (;;) {
       if (this.isCurrent("+")) {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.ADD,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.ADD,
           lhs: node,
           rhs: this.parseMul(),
           token: token,
@@ -775,7 +837,8 @@ export class Parser {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.SUB,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.SUB,
           lhs: node,
           rhs: this.parseMul(),
           token: token,
@@ -792,13 +855,13 @@ export class Parser {
   parseMul(): Expr {
     const node = this.parseUnary();
     let token: Token;
-
     for (;;) {
       if (this.isCurrent("*")) {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.MUL,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.MUL,
           lhs: node,
           rhs: this.parseUnary(),
           token: token,
@@ -808,7 +871,8 @@ export class Parser {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.DIV,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.DIV,
           lhs: node,
           rhs: this.parseUnary(),
           token: token,
@@ -818,7 +882,8 @@ export class Parser {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.MOD,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.MOD,
           lhs: node,
           rhs: this.parseUnary(),
           token: token,
@@ -828,7 +893,8 @@ export class Parser {
         token = this.peek();
         this.next();
         return {
-          type: NODE_TYPE.POW,
+          type: NODE_TYPE.CALL_EXPR,
+          callee: OP_TYPE.POW,
           lhs: node,
           rhs: this.parseUnary(),
           token: token,
@@ -844,10 +910,10 @@ export class Parser {
    */
   parseUnary(): Expr {
     if (this.isCurrent("-")) {
-      const token = this.peek();
-      this.next();
+      const token = this.consume("-");
       return {
-        type: NODE_TYPE.SUB,
+        type: NODE_TYPE.CALL_EXPR,
+        callee: OP_TYPE.SUB,
         lhs: {
           type: NODE_TYPE.NUM,
           token: {
@@ -872,8 +938,8 @@ export class Parser {
 
   /**
    * `primary = "(" expr ")"
-   *          | list
-   *          | vector
+   *          | list = "[" ?(unary *("," unary)) "]"
+   *          | vector = "{" member *("," member) "}"
    *          | bool
    *          | number
    *          | atom
@@ -889,11 +955,9 @@ export class Parser {
       this.consume(")");
       return expr;
     }
-
     // list = "[" ?(unary *("," unary)) "]"
     if (this.isCurrent("[")) {
-      const tok = this.peek();
-      this.next();
+      const tok = this.consume("[");
       const list: Expr[] = [];
       if (!this.isCurrent("]")) {
         list.push(this.parseUnary());
@@ -905,15 +969,13 @@ export class Parser {
       this.consume("]");
       return {
         type: NODE_TYPE.LIST,
-        list: list,
+        member: list,
         token: tok,
       };
     }
-
     // vector = "{" member *("," member) "}"
     if (this.isCurrent("{")) {
-      const tok = this.peek();
-      this.next();
+      const tok = this.consume("{");
       const member: Member[] = [];
       if (!this.isCurrent("}")) {
         member.push(this.parseMember());
@@ -929,17 +991,15 @@ export class Parser {
         token: tok,
       };
     }
-
     // bool
-    if (this.isCurrent("true") || this.isCurrent("false")) {
-      const tok = this.peek();
-      this.next();
-      return {
-        type: NODE_TYPE.BOOL,
-        token: tok,
-      };
-    }
-
+    // if (this.isCurrent("true") || this.isCurrent("false")) {
+    //   const tok = this.peek();
+    //   this.next();
+    //   return {
+    //     type: NODE_TYPE.BOOL,
+    //     token: tok,
+    //   };
+    // }
     switch (this.peek().type) {
       // number
       case TOKEN_TYPE.NUMBER:
@@ -947,8 +1007,15 @@ export class Parser {
           type: NODE_TYPE.NUM,
           token: this.consume(TOKEN_TYPE.NUMBER),
         };
+      // string
+      case TOKEN_TYPE.STRING:
+        return {
+          type: NODE_TYPE.STRING,
+          token: this.consume(TOKEN_TYPE.STRING),
+        };
       // atom
       case TOKEN_TYPE.ATOM:
+        // todo: atomPoolが必要
         return {
           type: NODE_TYPE.ATOM,
           token: this.consume(TOKEN_TYPE.ATOM),
@@ -956,33 +1023,41 @@ export class Parser {
       // ident-var ?(":" type)
       case TOKEN_TYPE.IDENT_VAR: {
         const tok = this.peek();
+        // typeのdummyを用意
         let ty: Type = {
-          type: "Dummy",
-          position: this.tokenList[this.current + 2].position,
+          type: "dummy",
+          token: {
+            type: TOKEN_TYPE.IDENT_VAR,
+            position: {
+              line: tok.position.line,
+              character: tok.position.character + tok.value.length,
+            },
+            value: "dummy",
+          },
         };
         this.next();
+        // typeがあれば、型を解析してlocalListに登録
         if (this.isCurrent(":")) {
           this.consume(":");
           ty = this.parseType();
           this.pushVar(tok, ty, true);
         }
-
+        // 変数がなければ、すでに存在するかどうかを確認
         if (!this.findVar(tok)) {
           this.errorList.push({
             message: `Variable ${JSON.stringify(tok.value)} is not defined.`,
-            position: tok.position,
+            position: ty.token.position,
           });
           return {
             type: NODE_TYPE.DUMMY,
             token: tok,
           };
         }
-
         return {
           type: NODE_TYPE.VAR,
-          token: tok,
           name: tok.value,
           valueType: ty,
+          token: tok,
         };
       }
       default: {
@@ -1002,16 +1077,15 @@ export class Parser {
   }
 
   /**
-   * `member = unary | ident ":" type`
+   * `member = unary | ident ?(":" type)`
    * @returns {Member} メンバー
    */
   parseMember(): Member {
     const tok = this.peek();
     let ty: Type = {
-      type: "Dummy",
-      position: this.tokenList[this.current + 2].position,
+      type: "dummy",
+      token: tok,
     };
-
     if (this.isCurrent(TOKEN_TYPE.IDENT_VAR)) {
       this.next();
       if (this.isCurrent(":")) {
@@ -1020,11 +1094,15 @@ export class Parser {
       }
       return {
         type: NODE_TYPE.MEMBER,
+        value: {
+          type: NODE_TYPE.VAR,
+          name: tok.value,
+          valueType: ty,
+          token: tok,
+        },
         token: tok,
-        value: ty,
       };
     }
-
     const node = this.parseUnary();
     return {
       type: NODE_TYPE.MEMBER,

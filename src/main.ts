@@ -47,7 +47,7 @@ const compile = (args: string[]) => {
 const main = (args: string[]) => {
   try {
     const output = compile(args);
-    console.log(output.program);
+    console.dir(output.program, { depth: null });
   } catch (e) {
     reportError(errorList);
   }
