@@ -5,7 +5,8 @@ export const TOKEN_TYPE = {
   RESERVED: "reserved",
   IDENT_VAR: "ident-var",
   IDENT_FUNC: "ident-func",
-  ATOM: "atom",
+  ATOM: "literal-atom",
+  STRING: "string",
   NUMBER: "number",
   NEWLINE: "new-line",
   EOF: "EOF",
@@ -15,34 +16,25 @@ export const TOKEN_TYPE = {
  * 構文木ノードの種類
  */
 export const NODE_TYPE = {
-  // 値
+  // リテラル値
   NUM: "num",
+  STRING: "string",
+
+  // 単純変数
   BOOL: "bool",
   ATOM: "atom",
+
+  // 構造変数
   VECTOR: "vector",
   MEMBER: "member",
   LIST: "list",
   VAR: "var",
 
-  // 演算
-  ADD: "add",
-  SUB: "sub",
-  MUL: "mul",
-  DIV: "div",
-  MOD: "mod",
-  POW: "pow",
-  EQ: "EQ",
-  NE: "NE",
-  LT: "LT",
-  LE: "LE",
-  AND: "and",
-  OR: "or",
-  NOT: "not",
-
   // 文
+  CALL_EXPR: "call-expr",
   ASSIGN: "assign",
   BLOCK: "block",
-  EXPR_STMT: "EXPR_STMT",
+  STMT: "stmt",
   PARAM: "param",
   MODULE: "module",
   PROGRAM: "program",
@@ -56,10 +48,40 @@ export const NODE_TYPE = {
   SQRT: "sqrt",
 } as const;
 
-export const TYPE_KIND = {
-  CHAR: "CHAR",
-  INT: "INT",
-  PTR: "PTR",
-  ARRAY: "ARRAY",
-  STRUCT: "STRUCT",
+// 演算子の種類
+export const OP_TYPE = {
+  ADD: "add",
+  SUB: "sub",
+  MUL: "mul",
+  DIV: "div",
+  MOD: "mod",
+  POW: "pow",
+  EQ: "EQ",
+  NE: "NE",
+  LT: "LT",
+  LE: "LE",
+  AND: "and",
+  OR: "or",
+  NOT: "not",
+} as const;
+
+// 定数の型
+export const CONST_TYPE = {
+  INTEGER: "integer",
+  REAL: "real",
+  STRING: "string",
+} as const;
+
+// 単純変数の型
+export const SIMPLE_TYPE = {
+  INTEGER: CONST_TYPE.INTEGER,
+  REAL: CONST_TYPE.REAL,
+  ATOM: "atom",
+  BOOL: "bool",
+} as const;
+
+// 構造変数の型
+export const STRUCT_TYPE = {
+  LIST: "list",
+  VECTOR: "vector",
 } as const;

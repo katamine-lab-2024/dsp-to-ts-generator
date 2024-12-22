@@ -1,12 +1,6 @@
-import type { NODE_TYPE } from "../constant";
+import type { NODE_TYPE, OP_TYPE } from "../constant";
 import type { Token } from "./token";
-
-// 変数の型
-export type TypeKind = "integer" | "real" | "atom" | "bool" | "Dummy";
-export type Type = {
-  type: TypeKind;
-  position: { line: number; character: number };
-};
+import type { Type } from "./type";
 
 // 構文木
 export type NodeType = (typeof NODE_TYPE)[keyof typeof NODE_TYPE];
@@ -25,15 +19,21 @@ export type Dummy = {
 } & BaseNode;
 
 // リテラル
-export type SimpleNode = {
-  type: typeof NODE_TYPE.NUM | typeof NODE_TYPE.ATOM | typeof NODE_TYPE.BOOL;
-  // | typeof NODE_TYPE.NULL; //? nullあるのか
+export type LiteralNode = {
+  type: typeof NODE_TYPE.NUM | typeof NODE_TYPE.STRING | typeof NODE_TYPE.ATOM;
+} & BaseNode;
+
+// 変数
+export type VarNode = {
+  type: typeof NODE_TYPE.VAR;
+  name: string;
+  valueType: Type;
 } & BaseNode;
 
 // リスト
 export type ListNode = {
   type: typeof NODE_TYPE.LIST;
-  list: Expr[];
+  member: Expr[];
 } & BaseNode;
 
 // ベクトル(構造体)
@@ -45,65 +45,41 @@ export type StructNode = {
 // ベクトルのメンバー
 export type Member = {
   type: typeof NODE_TYPE.MEMBER;
-  value: Type | Expr;
+  value: Expr | VarNode;
 } & BaseNode;
 
-// 変数
-export type VarNode = {
-  type: typeof NODE_TYPE.VAR;
-  name: string;
-  valueType: Type; // ない場合はdummy
-} & BaseNode;
-
-// Primary文法
-export type Primary = SimpleNode | ListNode | StructNode | VarNode | Dummy;
+// Primary
+export type Primary = LiteralNode | VarNode | ListNode | StructNode | Dummy;
 
 // 単項演算子
 export type UnaryNode = {
-  type: typeof NODE_TYPE.NOT;
+  type: typeof NODE_TYPE.CALL_EXPR;
+  callee: typeof OP_TYPE.NOT;
   lhs: Expr;
-} & BaseNode;
-
-// 式文
-export type ESNode = {
-  type: typeof NODE_TYPE.EXPR_STMT;
-  expr: BuildInNode;
 } & BaseNode;
 
 // 二項演算子
 export type BinaryNode = {
-  type:
-    | typeof NODE_TYPE.ADD
-    | typeof NODE_TYPE.SUB
-    | typeof NODE_TYPE.MUL
-    | typeof NODE_TYPE.DIV
-    | typeof NODE_TYPE.MOD
-    | typeof NODE_TYPE.POW
-    | typeof NODE_TYPE.EQ
-    | typeof NODE_TYPE.NE
-    | typeof NODE_TYPE.LT
-    | typeof NODE_TYPE.LE
-    | typeof NODE_TYPE.AND
-    | typeof NODE_TYPE.OR;
+  type: typeof NODE_TYPE.CALL_EXPR;
+  callee:
+    | typeof OP_TYPE.ADD
+    | typeof OP_TYPE.SUB
+    | typeof OP_TYPE.MUL
+    | typeof OP_TYPE.DIV
+    | typeof OP_TYPE.MOD
+    | typeof OP_TYPE.POW
+    | typeof OP_TYPE.EQ
+    | typeof OP_TYPE.NE
+    | typeof OP_TYPE.LT
+    | typeof OP_TYPE.LE
+    | typeof OP_TYPE.AND
+    | typeof OP_TYPE.OR;
   lhs: Expr;
   rhs: Expr;
 } & BaseNode;
 
-// 代入文
-export type AssignNode = {
-  type: typeof NODE_TYPE.ASSIGN;
-  lhs: Expr;
-  rhs: BuildInNode;
-} & BaseNode;
-
 // 式
-export type Expr = Primary | UnaryNode | BinaryNode | AssignNode | ESNode;
-
-// ブロック
-export type BlockNode = {
-  type: typeof NODE_TYPE.BLOCK;
-  body: Stmt[];
-} & BaseNode;
+export type Expr = Primary | UnaryNode | BinaryNode;
 
 // 仮定・生成
 // for
@@ -112,6 +88,23 @@ export type ForNode = {
   from: Expr;
   to: Expr;
   inc: Expr;
+} & BaseNode;
+
+// 数値演算
+// 平方根: sqrt
+export type SqrtNode = {
+  type: typeof NODE_TYPE.SQRT;
+  expr: Expr;
+} & BaseNode;
+
+// 組み込みモジュール
+export type BuildInNode = ForNode | SqrtNode | Expr;
+
+// 代入文
+export type AssignNode = {
+  type: typeof NODE_TYPE.ASSIGN;
+  lhs: Primary;
+  rhs: BuildInNode;
 } & BaseNode;
 
 // 条件分岐
@@ -137,45 +130,47 @@ export type CallNode = {
   output: Expr;
 } & BaseNode;
 
-// 数値演算
-// 平方根: sqrt
-export type SqrtNode = {
-  type: typeof NODE_TYPE.SQRT;
-  expr: Expr;
+// 文式
+export type StmtExpr = AssignNode | TestNode | WhenNode | CallNode;
+
+// 文(";"で区切られた式)
+export type Stmt = {
+  type: typeof NODE_TYPE.STMT;
+  stmt: StmtExpr;
 } & BaseNode;
 
-// 組み込みモジュール
-export type BuildInNode =
-  | ForNode
-  | WhenNode
-  | TestNode
-  | CallNode
-  | SqrtNode
-  | Expr;
+// エラー対応にダミーを含む
+export type StmtNode = Stmt | Dummy;
 
-// 文
-export type Stmt = Expr | BlockNode;
-
-// モジュールの引数
-export type Param = {
-  type: typeof NODE_TYPE.PARAM;
-  value: SimpleNode | Member[];
+// ブロック
+export type Block = {
+  type: typeof NODE_TYPE.BLOCK;
+  body: StmtNode[];
 } & BaseNode;
 
-// エラー対応にダミー含む
-export type ParamNode = Param | Dummy;
+// エラー対応にダミーを含む
+export type BlockNode = Block | Dummy;
 
 // モジュール(関数定義)
 export type Module = {
   type: typeof NODE_TYPE.MODULE;
   name: string;
   paramList: ParamNode[];
-  body: Stmt[];
+  body: BlockNode[];
   localList: VarNode[];
 } & BaseNode;
 
-// エラー対応にダミー含む
+// エラー対応にダミーを含む
 export type ModuleNode = Module | Dummy;
+
+// モジュールの引数
+export type Param = {
+  type: typeof NODE_TYPE.PARAM;
+  value: LiteralNode | Member[];
+} & BaseNode;
+
+// エラー対応にダミーを含む
+export type ParamNode = Param | Dummy;
 
 // プログラム
 export type Program = {
