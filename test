@@ -1,11 +1,8 @@
-for({B: real, E: real, S: real}, {N: real})
+pointInQuarterCircle({R : real}, {X : real, Y : real})
 	method
-		when(B =< E);
-		N: real = B;
+		X : real = for(0.0, R, 1.0);
+		Y : real = for(0.0, R, 1.0);
+		D : real = sqrt(X^2 + Y^2);
+		test(D =< R);
 	end method;
-	method
-		when(B+S =< E);
-		B1: real = B+S;
-		call(for, {B1, E, S}, {N});
-	end method;
-end;
+end module;

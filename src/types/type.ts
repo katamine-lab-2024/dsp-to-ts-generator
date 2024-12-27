@@ -29,3 +29,24 @@ export type StructType = {
 } & BaseType;
 
 export type Type = SimpleType | StructType | BaseType;
+
+// 新しい型
+
+export type NewSimple = {
+  type: "number" | "string" | "boolean";
+  token: Token;
+};
+
+export type NewStruct = {
+  type: "list" | "vector";
+  member: NewType[];
+  token: Token;
+};
+
+export type NewType =
+  | NewSimple
+  | NewStruct
+  | {
+      type: "dummy";
+      token: Token;
+    };

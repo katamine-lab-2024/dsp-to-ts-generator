@@ -3,6 +3,7 @@ import { parser } from "./parser";
 import * as fs from "node:fs";
 import { getUserInput, setFilename, setUserInput, reportError } from "./utils";
 import type { CompileError } from "./types/error";
+import { converter } from "./tryVisitor";
 
 const errorList: CompileError[] = [];
 
@@ -32,7 +33,10 @@ const compile = (args: string[]) => {
     throw new Error("構文解析エラー");
   }
 
-  return ast;
+  // 変換
+  const newAst = converter(ast.program);
+
+  return newAst;
   // let offset = 0;
   // for (let v: Var | null = ast.locals; v !== null; v = v.next) {
   //   offset += 8;
@@ -47,7 +51,7 @@ const compile = (args: string[]) => {
 const main = (args: string[]) => {
   try {
     const output = compile(args);
-    console.dir(output.program, { depth: null });
+    console.dir(output, { depth: null });
   } catch (e) {
     reportError(errorList);
   }
