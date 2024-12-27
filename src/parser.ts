@@ -293,7 +293,7 @@ export class Parser {
   }
 
   /**
-   * `module = ident-func params *stmt "end" "module" ";"`
+   * `module = ident-func params *block "end" "module" ";"`
    * @returns {ModuleNode} モジュールノード
    */
   parseModule(): ModuleNode {
@@ -421,6 +421,10 @@ export class Parser {
     };
   }
 
+  /**
+   * `block = "method" *stmt "end" "method" ";"`
+   * @returns {BlockNode} ブロックノード
+   */
   parseBlock(): BlockNode {
     const tok = this.peek();
     this.expect("method");
@@ -458,9 +462,12 @@ export class Parser {
       };
     }
     this.next();
+    const bs = this.scope.block;
+    this.scope.block = [];
     return {
       type: NODE_TYPE.BLOCK,
       body: stmt,
+      varList: bs,
       token: tok,
     };
   }
@@ -592,7 +599,7 @@ export class Parser {
   }
 
   /**
-   * `assign = primary ?(":" type )"=" build-in`
+   * `assign = primary "=" build-in`
    * @returns {Expr} 代入式
    */
   parseAssign(): AssignNode {
@@ -732,7 +739,7 @@ export class Parser {
     const node = this.parseRelational();
     let token: Token;
     for (;;) {
-      if (this.isCurrent("==")) {
+      if (this.isCurrent("=")) {
         token = this.peek();
         this.next();
         return {
@@ -913,19 +920,8 @@ export class Parser {
       const token = this.consume("-");
       return {
         type: NODE_TYPE.CALL_EXPR,
-        callee: OP_TYPE.SUB,
-        lhs: {
-          type: NODE_TYPE.NUM,
-          token: {
-            type: TOKEN_TYPE.NUMBER,
-            position: {
-              line: token.position.line,
-              character: token.position.character - 1,
-            },
-            value: "0",
-          },
-        },
-        rhs: this.parsePrimary(),
+        callee: OP_TYPE.NEG,
+        lhs: this.parsePrimary(),
         token: token,
       };
     }

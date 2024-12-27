@@ -63,6 +63,7 @@ export const OP_TYPE = {
   AND: "and",
   OR: "or",
   NOT: "not",
+  NEG: "neg",
 } as const;
 
 // 定数の型
@@ -84,4 +85,38 @@ export const SIMPLE_TYPE = {
 export const STRUCT_TYPE = {
   LIST: "list",
   VECTOR: "vector",
+} as const;
+
+/**
+ * 新しい構文木ノードの種類
+ */
+export const NEW_NODE_TYPE = {
+  // リテラル値
+  NUM: "num",
+  STRING: "string",
+  BOOLEAN: "boolean",
+
+  // 構造変数
+  OBJECT: "object",
+  MEMBER: "member",
+  LIST: "list",
+  VAR: "var",
+
+  // 文
+  CALL_EXPR: "call-expr",
+  ASSIGN: "assign",
+  BLOCK: "block",
+  RETURN: "return",
+  STMT: "stmt",
+  PARAM: "param",
+  METHOD: "method",
+  CLASS: "class",
+  PROGRAM: "program",
+  DUMMY: "dummy",
+
+  // 制御構文
+  IF: "if",
+  ELSE: "else",
+  FOR: "for",
+  SQRT: "sqrt",
 } as const;
