@@ -2,6 +2,7 @@ import { NEW_NODE_TYPE, NODE_TYPE } from "./constant";
 import type * as ast from "./types/ast";
 import type * as newAst from "./types/newAst";
 import type { Type, NewType } from "./types/type";
+import { sortPredicates } from "./try-cus";
 
 const stmtBlockType = "stmt-block" as const;
 
@@ -164,7 +165,6 @@ const visitor: Visitor = {
     };
   },
   [NODE_TYPE.FOR]: (node: ast.ForNode) => {
-    console.log("::for");
     const from = visitNode(node.from, visitor) as newAst.Expr;
     const to = visitNode(node.to, visitor) as newAst.Expr;
     const inc = visitNode(node.inc, visitor) as newAst.Expr;
@@ -214,63 +214,32 @@ const visitor: Visitor = {
     };
   },
   [NODE_TYPE.BLOCK]: (node: ast.Block) => {
-    const list = [];
-    let slist: ast.Stmt[] = [];
-    for (const stmt of node.body) {
-      const s = stmt as ast.Stmt;
-      if (s.stmt.type === NODE_TYPE.ASSIGN) {
-        if (s.stmt.rhs.type === NODE_TYPE.FOR) {
-          if (slist.length !== 0) {
-            list.push({
-              type: "stmt-block" as const,
-              token: node.token,
-              body: slist,
-              varList: [],
-            });
-            slist = [];
-          }
-          list.push({
-            type: "stmt-block" as const,
-            token: node.token,
-            body: [s],
-            varList: [],
-          });
-          continue;
-        }
-      }
-      slist.push(s);
-    }
-    if (slist.length !== 0) {
-      list.push({
-        type: "stmt-block" as const,
-        token: node.token,
-        body: slist,
-        varList: [],
-      });
-      slist = [];
-    }
-    const newBody = list.map((stmt, index) => {
+    // node.body(stmt[])のソート
+    const sortedStmts: ast.StmtBlock[] = sortPredicates(node.body);
+    // 内部クラスの生成
+    const newBody: newAst.Class[] = sortedStmts.map((stmt, index) => {
       const innerClass = visitNode(stmt, visitor) as newAst.Class;
       innerClass.name = `${index + 1}`;
       return innerClass;
-    }) as newAst.Class[];
-    const newField = node.varList.map((param) => {
-      const v = visitNode(param, visitor);
+    });
+    // Blockスコープで定義される変数フィールド
+    const newField = node.varList.map((p) => {
+      const v = visitNode(p, visitor);
       return {
         type: NEW_NODE_TYPE.PARAM,
-        token: param.token,
+        token: p.token,
         value: [v],
       };
     }) as newAst.ParamNode[];
-
-    const c: newAst.Class = {
+    // Blockのクラスを作成
+    const blockClass: newAst.Class = {
       type: NEW_NODE_TYPE.CLASS,
       token: node.token,
       name: "",
       fieldList: newField,
       body: newBody,
     };
-    return c;
+    return blockClass;
   },
   [NODE_TYPE.PARAM]: (node: ast.ParamNode) => {
     const member = (node as ast.Param).value as ast.Member[];
@@ -292,6 +261,8 @@ const visitor: Visitor = {
       (inner as newAst.Class).name = `${i}`;
       i++;
     }
+    // field[0]は入力変数
+    // field[1]は出力変数
     const field = node.paramList.map((param) =>
       visitNode(param, visitor)
     ) as newAst.ParamNode[];
@@ -317,277 +288,277 @@ const visitor: Visitor = {
 
 // ノードの例
 // a = 1 + 2;
-const complexNode: ast.Node = {
-  type: NODE_TYPE.PROGRAM,
-  body: [
-    {
-      type: NODE_TYPE.MODULE,
-      token: {
-        type: "reserved",
-        value: "module",
-        position: {
-          line: 1,
-          character: 1,
-        },
-      },
-      name: "main",
-      paramList: [],
-      localList: [],
-      body: [
-        {
-          type: NODE_TYPE.BLOCK,
-          token: {
-            type: "reserved",
-            value: "{",
-            position: {
-              line: 1,
-              character: 1,
-            },
-          },
-          varList: [],
-          body: [
-            {
-              type: NODE_TYPE.STMT,
-              token: {
-                type: "reserved",
-                value: ";",
-                position: {
-                  line: 1,
-                  character: 1,
-                },
-              },
-              stmt: {
-                type: NODE_TYPE.ASSIGN,
-                token: {
-                  type: "reserved",
-                  value: "=",
-                  position: {
-                    line: 1,
-                    character: 1,
-                  },
-                },
-                lhs: {
-                  type: NODE_TYPE.VAR,
-                  name: "a",
-                  token: {
-                    type: "ident-var",
-                    value: "a",
-                    position: {
-                      line: 1,
-                      character: 1,
-                    },
-                  },
-                  valueType: {
-                    type: "real",
-                    token: {
-                      type: "ident-var",
-                      value: "a",
-                      position: {
-                        line: 1,
-                        character: 1,
-                      },
-                    },
-                  },
-                },
-                rhs: {
-                  type: NODE_TYPE.FOR,
-                  token: {
-                    type: "reserved",
-                    value: "for",
-                    position: {
-                      line: 1,
-                      character: 1,
-                    },
-                  },
-                  from: {
-                    type: NODE_TYPE.NUM,
-                    token: {
-                      type: "number",
-                      value: "1",
-                      position: {
-                        line: 1,
-                        character: 1,
-                      },
-                    },
-                  },
-                  to: {
-                    type: NODE_TYPE.NUM,
-                    token: {
-                      type: "number",
-                      value: "10",
-                      position: {
-                        line: 1,
-                        character: 1,
-                      },
-                    },
-                  },
-                  inc: {
-                    type: NODE_TYPE.NUM,
-                    token: {
-                      type: "number",
-                      value: "1",
-                      position: {
-                        line: 1,
-                        character: 1,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              type: NODE_TYPE.STMT,
-              token: {
-                type: "reserved",
-                value: ";",
-                position: {
-                  line: 1,
-                  character: 1,
-                },
-              },
-              stmt: {
-                type: NODE_TYPE.ASSIGN,
-                token: {
-                  type: "reserved",
-                  value: "=",
-                  position: {
-                    line: 1,
-                    character: 1,
-                  },
-                },
-                lhs: {
-                  type: NODE_TYPE.VAR,
-                  name: "b",
-                  token: {
-                    type: "ident-var",
-                    value: "b",
-                    position: {
-                      line: 1,
-                      character: 1,
-                    },
-                  },
-                  valueType: {
-                    type: "real",
-                    token: {
-                      type: "ident-var",
-                      value: "b",
-                      position: {
-                        line: 1,
-                        character: 1,
-                      },
-                    },
-                  },
-                },
-                rhs: {
-                  type: NODE_TYPE.CALL_EXPR,
-                  token: {
-                    type: "reserved",
-                    value: "+",
-                    position: {
-                      line: 1,
-                      character: 1,
-                    },
-                  },
-                  callee: "add",
-                  lhs: {
-                    type: NODE_TYPE.NUM,
-                    token: {
-                      type: "number",
-                      value: "1",
-                      position: {
-                        line: 1,
-                        character: 1,
-                      },
-                    },
-                  },
-                  rhs: {
-                    type: NODE_TYPE.NUM,
-                    token: {
-                      type: "number",
-                      value: "2",
-                      position: {
-                        line: 1,
-                        character: 1,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              type: NODE_TYPE.STMT,
-              token: {
-                type: "reserved",
-                value: ";",
-                position: {
-                  line: 1,
-                  character: 1,
-                },
-              },
-              stmt: {
-                type: NODE_TYPE.TEST,
-                token: {
-                  type: "reserved",
-                  value: "test",
-                  position: {
-                    line: 1,
-                    character: 1,
-                  },
-                },
-                cond: {
-                  type: NODE_TYPE.CALL_EXPR,
-                  token: {
-                    type: "reserved",
-                    value: "test",
-                    position: {
-                      line: 1,
-                      character: 1,
-                    },
-                  },
-                  callee: "EQ",
-                  lhs: {
-                    type: NODE_TYPE.VAR,
-                    name: "a",
-                    token: {
-                      type: "ident-var",
-                      value: "a",
-                      position: {
-                        line: 1,
-                        character: 1,
-                      },
-                    },
-                    valueType: {
-                      type: "real",
-                      token: {
-                        type: "ident-var",
-                        value: "a",
-                        position: {
-                          line: 1,
-                          character: 1,
-                        },
-                      },
-                    },
-                  },
-                  rhs: {
-                    type: NODE_TYPE.NUM,
-                    token: {
-                      type: "number",
-                      value: "10",
-                      position: {
-                        line: 1,
-                        character: 1,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
+// const complexNode: ast.Node = {
+// 	type: NODE_TYPE.PROGRAM,
+// 	body: [
+// 		{
+// 			type: NODE_TYPE.MODULE,
+// 			token: {
+// 				type: "reserved",
+// 				value: "module",
+// 				position: {
+// 					line: 1,
+// 					character: 1,
+// 				},
+// 			},
+// 			name: "main",
+// 			paramList: [],
+// 			localList: [],
+// 			body: [
+// 				{
+// 					type: NODE_TYPE.BLOCK,
+// 					token: {
+// 						type: "reserved",
+// 						value: "{",
+// 						position: {
+// 							line: 1,
+// 							character: 1,
+// 						},
+// 					},
+// 					varList: [],
+// 					body: [
+// 						{
+// 							type: NODE_TYPE.STMT,
+// 							token: {
+// 								type: "reserved",
+// 								value: ";",
+// 								position: {
+// 									line: 1,
+// 									character: 1,
+// 								},
+// 							},
+// 							stmt: {
+// 								type: NODE_TYPE.ASSIGN,
+// 								token: {
+// 									type: "reserved",
+// 									value: "=",
+// 									position: {
+// 										line: 1,
+// 										character: 1,
+// 									},
+// 								},
+// 								lhs: {
+// 									type: NODE_TYPE.VAR,
+// 									name: "a",
+// 									token: {
+// 										type: "ident-var",
+// 										value: "a",
+// 										position: {
+// 											line: 1,
+// 											character: 1,
+// 										},
+// 									},
+// 									valueType: {
+// 										type: "real",
+// 										token: {
+// 											type: "ident-var",
+// 											value: "a",
+// 											position: {
+// 												line: 1,
+// 												character: 1,
+// 											},
+// 										},
+// 									},
+// 								},
+// 								rhs: {
+// 									type: NODE_TYPE.FOR,
+// 									token: {
+// 										type: "reserved",
+// 										value: "for",
+// 										position: {
+// 											line: 1,
+// 											character: 1,
+// 										},
+// 									},
+// 									from: {
+// 										type: NODE_TYPE.NUM,
+// 										token: {
+// 											type: "number",
+// 											value: "1",
+// 											position: {
+// 												line: 1,
+// 												character: 1,
+// 											},
+// 										},
+// 									},
+// 									to: {
+// 										type: NODE_TYPE.NUM,
+// 										token: {
+// 											type: "number",
+// 											value: "10",
+// 											position: {
+// 												line: 1,
+// 												character: 1,
+// 											},
+// 										},
+// 									},
+// 									inc: {
+// 										type: NODE_TYPE.NUM,
+// 										token: {
+// 											type: "number",
+// 											value: "1",
+// 											position: {
+// 												line: 1,
+// 												character: 1,
+// 											},
+// 										},
+// 									},
+// 								},
+// 							},
+// 						},
+// 						{
+// 							type: NODE_TYPE.STMT,
+// 							token: {
+// 								type: "reserved",
+// 								value: ";",
+// 								position: {
+// 									line: 1,
+// 									character: 1,
+// 								},
+// 							},
+// 							stmt: {
+// 								type: NODE_TYPE.ASSIGN,
+// 								token: {
+// 									type: "reserved",
+// 									value: "=",
+// 									position: {
+// 										line: 1,
+// 										character: 1,
+// 									},
+// 								},
+// 								lhs: {
+// 									type: NODE_TYPE.VAR,
+// 									name: "b",
+// 									token: {
+// 										type: "ident-var",
+// 										value: "b",
+// 										position: {
+// 											line: 1,
+// 											character: 1,
+// 										},
+// 									},
+// 									valueType: {
+// 										type: "real",
+// 										token: {
+// 											type: "ident-var",
+// 											value: "b",
+// 											position: {
+// 												line: 1,
+// 												character: 1,
+// 											},
+// 										},
+// 									},
+// 								},
+// 								rhs: {
+// 									type: NODE_TYPE.CALL_EXPR,
+// 									token: {
+// 										type: "reserved",
+// 										value: "+",
+// 										position: {
+// 											line: 1,
+// 											character: 1,
+// 										},
+// 									},
+// 									callee: "add",
+// 									lhs: {
+// 										type: NODE_TYPE.NUM,
+// 										token: {
+// 											type: "number",
+// 											value: "1",
+// 											position: {
+// 												line: 1,
+// 												character: 1,
+// 											},
+// 										},
+// 									},
+// 									rhs: {
+// 										type: NODE_TYPE.NUM,
+// 										token: {
+// 											type: "number",
+// 											value: "2",
+// 											position: {
+// 												line: 1,
+// 												character: 1,
+// 											},
+// 										},
+// 									},
+// 								},
+// 							},
+// 						},
+// 						{
+// 							type: NODE_TYPE.STMT,
+// 							token: {
+// 								type: "reserved",
+// 								value: ";",
+// 								position: {
+// 									line: 1,
+// 									character: 1,
+// 								},
+// 							},
+// 							stmt: {
+// 								type: NODE_TYPE.TEST,
+// 								token: {
+// 									type: "reserved",
+// 									value: "test",
+// 									position: {
+// 										line: 1,
+// 										character: 1,
+// 									},
+// 								},
+// 								cond: {
+// 									type: NODE_TYPE.CALL_EXPR,
+// 									token: {
+// 										type: "reserved",
+// 										value: "test",
+// 										position: {
+// 											line: 1,
+// 											character: 1,
+// 										},
+// 									},
+// 									callee: "EQ",
+// 									lhs: {
+// 										type: NODE_TYPE.VAR,
+// 										name: "a",
+// 										token: {
+// 											type: "ident-var",
+// 											value: "a",
+// 											position: {
+// 												line: 1,
+// 												character: 1,
+// 											},
+// 										},
+// 										valueType: {
+// 											type: "real",
+// 											token: {
+// 												type: "ident-var",
+// 												value: "a",
+// 												position: {
+// 													line: 1,
+// 													character: 1,
+// 												},
+// 											},
+// 										},
+// 									},
+// 									rhs: {
+// 										type: NODE_TYPE.NUM,
+// 										token: {
+// 											type: "number",
+// 											value: "10",
+// 											position: {
+// 												line: 1,
+// 												character: 1,
+// 											},
+// 										},
+// 									},
+// 								},
+// 							},
+// 						},
+// 					],
+// 				},
+// 			],
+// 		},
+// 	],
+// };
 
 // ノードを訪問
 // const result = visitNode(complexNode, visitor);
