@@ -32,6 +32,7 @@ export type VarNode = {
   type: typeof NODE_TYPE.VAR;
   name: string;
   valueType: Type;
+  isInput: boolean;
 } & BaseNode;
 
 // リスト
@@ -160,7 +161,10 @@ const stmtBlockType = "stmt-block" as const;
 export type StmtBlock = {
   type: typeof stmtBlockType;
   body: StmtNode[];
-  varList: VarNode[];
+  // varList: VarNode[];
+  phase: "assume" | "calc" | "test";
+  target: VarNode;
+  operand?: VarNode[];
 } & BaseNode;
 
 // エラー対応にダミーを含む

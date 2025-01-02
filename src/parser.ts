@@ -151,7 +151,7 @@ export class Parser {
    * @param {boolean} isBlock ブロックスコープかどうか
    * @returns {VarNode} 追加した変数
    */
-  pushVar(tok: Token, ty: Type, isBlock: boolean): VarNode {
+  pushVar(tok: Token, ty: Type, isBlock: boolean, isInput = false): VarNode {
     // 既に定義されていたら、型検査をして返す
     const fv = this.findVar(tok);
     if (fv) {
@@ -170,6 +170,7 @@ export class Parser {
             type: "dummy",
             token: tok,
           },
+          isInput: fv.isInput,
         };
       }
       return fv;
@@ -179,6 +180,7 @@ export class Parser {
       name: tok.value,
       valueType: ty,
       token: tok,
+      isInput: isInput,
     };
     this.localVarList.varList.push(v);
     if (isBlock) {
@@ -341,6 +343,8 @@ export class Parser {
     };
   }
 
+  private paramMemberIndex = -1;
+
   /**
    * `params = "(" ?( param *("," param)) ")"`
    * @returns {ParamNode[]} 引数リスト
@@ -379,6 +383,7 @@ export class Parser {
       };
     }
     if (this.isCurrent("{")) {
+      this.paramMemberIndex++;
       const vector = this.parsePrimary();
       if (vector.type !== NODE_TYPE.VECTOR) {
         this.errorList.push({
@@ -402,7 +407,13 @@ export class Parser {
                   type: "dummy",
                   token: m.token,
                 };
-          this.pushVar(m.token, ty, false);
+          const isInput = this.paramMemberIndex === 0;
+          if (isInput) {
+            if (m.value.type === NODE_TYPE.VAR) {
+              (m.value as VarNode).isInput = true;
+            }
+          }
+          this.pushVar(m.token, ty, false, isInput);
         }
       }
       return {
@@ -1039,7 +1050,8 @@ export class Parser {
           this.pushVar(tok, ty, true);
         }
         // 変数がなければ、すでに存在するかどうかを確認
-        if (!this.findVar(tok)) {
+        const fv = this.findVar(tok);
+        if (!fv) {
           this.errorList.push({
             message: `Variable ${JSON.stringify(tok.value)} is not defined.`,
             position: ty.token.position,
@@ -1050,10 +1062,11 @@ export class Parser {
           };
         }
         return {
-          type: NODE_TYPE.VAR,
+          type: fv.type,
           name: tok.value,
           valueType: ty,
           token: tok,
+          isInput: fv.isInput,
         };
       }
       default: {
@@ -1095,6 +1108,7 @@ export class Parser {
           name: tok.value,
           valueType: ty,
           token: tok,
+          isInput: false,
         },
         token: tok,
       };
