@@ -2,7 +2,7 @@ import { NEW_NODE_TYPE, NODE_TYPE } from "./constant";
 import type * as ast from "./types/ast";
 import type * as newAst from "./types/newAst";
 import type { Type, NewType } from "./types/type";
-import { sortPredicates } from "./try-cus";
+import { sortStmt } from "./try-cus";
 
 const stmtBlockType = "stmt-block" as const;
 
@@ -17,7 +17,6 @@ type Visitor = {
   [NODE_TYPE.FOR]: (node: ast.ForNode) => newAst.ForNode;
   [NODE_TYPE.ASSIGN]: (node: ast.AssignNode) => newAst.AssignNode;
   [NODE_TYPE.TEST]: (node: ast.TestNode) => newAst.If;
-  //   [NODE_TYPE.STMT]: (node: ast.StmtNode) => newAst.StmtNode;
   [stmtBlockType]: (node: ast.StmtBlock) => newAst.ClassNode;
   [NODE_TYPE.BLOCK]: (node: ast.Block) => newAst.ClassNode;
   [NODE_TYPE.PARAM]: (node: ast.ParamNode) => newAst.ParamNode;
@@ -44,8 +43,6 @@ function visitNode(node: ast.Node, visitor: Visitor): newAst.Node {
       return visitor[NODE_TYPE.ASSIGN](node as ast.AssignNode);
     case NODE_TYPE.TEST:
       return visitor[NODE_TYPE.TEST](node as ast.TestNode);
-    // case NODE_TYPE.STMT:
-    //   return visitor[NODE_TYPE.STMT](node as ast.StmtNode);
     case stmtBlockType:
       return visitor[stmtBlockType](node as ast.StmtBlock);
     case NODE_TYPE.BLOCK:
@@ -215,7 +212,7 @@ const visitor: Visitor = {
   },
   [NODE_TYPE.BLOCK]: (node: ast.Block) => {
     // node.body(stmt[])のソート
-    const sortedStmts: ast.StmtBlock[] = sortPredicates(node.body);
+    const sortedStmts: ast.StmtBlock[] = sortStmt(node.body);
     // 内部クラスの生成
     const newBody: newAst.Class[] = sortedStmts.map((stmt, index) => {
       const innerClass = visitNode(stmt, visitor) as newAst.Class;
@@ -285,284 +282,6 @@ const visitor: Visitor = {
     };
   },
 };
-
-// ノードの例
-// a = 1 + 2;
-// const complexNode: ast.Node = {
-// 	type: NODE_TYPE.PROGRAM,
-// 	body: [
-// 		{
-// 			type: NODE_TYPE.MODULE,
-// 			token: {
-// 				type: "reserved",
-// 				value: "module",
-// 				position: {
-// 					line: 1,
-// 					character: 1,
-// 				},
-// 			},
-// 			name: "main",
-// 			paramList: [],
-// 			localList: [],
-// 			body: [
-// 				{
-// 					type: NODE_TYPE.BLOCK,
-// 					token: {
-// 						type: "reserved",
-// 						value: "{",
-// 						position: {
-// 							line: 1,
-// 							character: 1,
-// 						},
-// 					},
-// 					varList: [],
-// 					body: [
-// 						{
-// 							type: NODE_TYPE.STMT,
-// 							token: {
-// 								type: "reserved",
-// 								value: ";",
-// 								position: {
-// 									line: 1,
-// 									character: 1,
-// 								},
-// 							},
-// 							stmt: {
-// 								type: NODE_TYPE.ASSIGN,
-// 								token: {
-// 									type: "reserved",
-// 									value: "=",
-// 									position: {
-// 										line: 1,
-// 										character: 1,
-// 									},
-// 								},
-// 								lhs: {
-// 									type: NODE_TYPE.VAR,
-// 									name: "a",
-// 									token: {
-// 										type: "ident-var",
-// 										value: "a",
-// 										position: {
-// 											line: 1,
-// 											character: 1,
-// 										},
-// 									},
-// 									valueType: {
-// 										type: "real",
-// 										token: {
-// 											type: "ident-var",
-// 											value: "a",
-// 											position: {
-// 												line: 1,
-// 												character: 1,
-// 											},
-// 										},
-// 									},
-// 								},
-// 								rhs: {
-// 									type: NODE_TYPE.FOR,
-// 									token: {
-// 										type: "reserved",
-// 										value: "for",
-// 										position: {
-// 											line: 1,
-// 											character: 1,
-// 										},
-// 									},
-// 									from: {
-// 										type: NODE_TYPE.NUM,
-// 										token: {
-// 											type: "number",
-// 											value: "1",
-// 											position: {
-// 												line: 1,
-// 												character: 1,
-// 											},
-// 										},
-// 									},
-// 									to: {
-// 										type: NODE_TYPE.NUM,
-// 										token: {
-// 											type: "number",
-// 											value: "10",
-// 											position: {
-// 												line: 1,
-// 												character: 1,
-// 											},
-// 										},
-// 									},
-// 									inc: {
-// 										type: NODE_TYPE.NUM,
-// 										token: {
-// 											type: "number",
-// 											value: "1",
-// 											position: {
-// 												line: 1,
-// 												character: 1,
-// 											},
-// 										},
-// 									},
-// 								},
-// 							},
-// 						},
-// 						{
-// 							type: NODE_TYPE.STMT,
-// 							token: {
-// 								type: "reserved",
-// 								value: ";",
-// 								position: {
-// 									line: 1,
-// 									character: 1,
-// 								},
-// 							},
-// 							stmt: {
-// 								type: NODE_TYPE.ASSIGN,
-// 								token: {
-// 									type: "reserved",
-// 									value: "=",
-// 									position: {
-// 										line: 1,
-// 										character: 1,
-// 									},
-// 								},
-// 								lhs: {
-// 									type: NODE_TYPE.VAR,
-// 									name: "b",
-// 									token: {
-// 										type: "ident-var",
-// 										value: "b",
-// 										position: {
-// 											line: 1,
-// 											character: 1,
-// 										},
-// 									},
-// 									valueType: {
-// 										type: "real",
-// 										token: {
-// 											type: "ident-var",
-// 											value: "b",
-// 											position: {
-// 												line: 1,
-// 												character: 1,
-// 											},
-// 										},
-// 									},
-// 								},
-// 								rhs: {
-// 									type: NODE_TYPE.CALL_EXPR,
-// 									token: {
-// 										type: "reserved",
-// 										value: "+",
-// 										position: {
-// 											line: 1,
-// 											character: 1,
-// 										},
-// 									},
-// 									callee: "add",
-// 									lhs: {
-// 										type: NODE_TYPE.NUM,
-// 										token: {
-// 											type: "number",
-// 											value: "1",
-// 											position: {
-// 												line: 1,
-// 												character: 1,
-// 											},
-// 										},
-// 									},
-// 									rhs: {
-// 										type: NODE_TYPE.NUM,
-// 										token: {
-// 											type: "number",
-// 											value: "2",
-// 											position: {
-// 												line: 1,
-// 												character: 1,
-// 											},
-// 										},
-// 									},
-// 								},
-// 							},
-// 						},
-// 						{
-// 							type: NODE_TYPE.STMT,
-// 							token: {
-// 								type: "reserved",
-// 								value: ";",
-// 								position: {
-// 									line: 1,
-// 									character: 1,
-// 								},
-// 							},
-// 							stmt: {
-// 								type: NODE_TYPE.TEST,
-// 								token: {
-// 									type: "reserved",
-// 									value: "test",
-// 									position: {
-// 										line: 1,
-// 										character: 1,
-// 									},
-// 								},
-// 								cond: {
-// 									type: NODE_TYPE.CALL_EXPR,
-// 									token: {
-// 										type: "reserved",
-// 										value: "test",
-// 										position: {
-// 											line: 1,
-// 											character: 1,
-// 										},
-// 									},
-// 									callee: "EQ",
-// 									lhs: {
-// 										type: NODE_TYPE.VAR,
-// 										name: "a",
-// 										token: {
-// 											type: "ident-var",
-// 											value: "a",
-// 											position: {
-// 												line: 1,
-// 												character: 1,
-// 											},
-// 										},
-// 										valueType: {
-// 											type: "real",
-// 											token: {
-// 												type: "ident-var",
-// 												value: "a",
-// 												position: {
-// 													line: 1,
-// 													character: 1,
-// 												},
-// 											},
-// 										},
-// 									},
-// 									rhs: {
-// 										type: NODE_TYPE.NUM,
-// 										token: {
-// 											type: "number",
-// 											value: "10",
-// 											position: {
-// 												line: 1,
-// 												character: 1,
-// 											},
-// 										},
-// 									},
-// 								},
-// 							},
-// 						},
-// 					],
-// 				},
-// 			],
-// 		},
-// 	],
-// };
-
-// ノードを訪問
-// const result = visitNode(complexNode, visitor);
-// console.dir(result, { depth: null });
 
 export const converter = (input: ast.Node): newAst.Node => {
   return visitNode(input, visitor);

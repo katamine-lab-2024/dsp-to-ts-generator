@@ -161,7 +161,6 @@ const stmtBlockType = "stmt-block" as const;
 export type StmtBlock = {
   type: typeof stmtBlockType;
   body: StmtNode[];
-  // varList: VarNode[];
   phase: "assume" | "calc" | "test";
   target: VarNode;
   operand?: VarNode[];
