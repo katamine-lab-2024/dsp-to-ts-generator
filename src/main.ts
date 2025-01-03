@@ -15,32 +15,26 @@ const compile = (args: string[]) => {
   // ファイル名を格納
   const filename = args[0];
   setFilename(filename);
-
   // ファイル読み込み
   const input = fs.readFileSync(filename, "utf-8");
   setUserInput(input);
-
   // 字句解析
   const tokenized = tokenize(getUserInput());
   if (tokenized.errorList.length > 0) {
     errorList.push(...tokenized.errorList);
     throw new Error("字句解析エラー");
   }
-
   // 構文解析
   const ast = parser(tokenized.tokenList);
   if (ast.errorList.length > 0) {
     errorList.push(...ast.errorList);
     throw new Error("構文解析エラー");
   }
-
   // 変換
   const newAst = converter(ast.program);
-
   // コード生成
-  const output = codeGen(newAst);
-
-  return output;
+  // const output = codeGen(newAst);
+  return newAst;
 };
 
 const main = (args: string[]) => {

@@ -1,8 +1,8 @@
 import { NEW_NODE_TYPE, NODE_TYPE } from "./constant";
+import { sortStmt } from "./sortTotalOrder";
 import type * as ast from "./types/ast";
 import type * as newAst from "./types/newAst";
 import type { Type, NewType } from "./types/type";
-import { sortStmt } from "./try-cus";
 
 const stmtBlockType = "stmt-block" as const;
 
