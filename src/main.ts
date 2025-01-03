@@ -4,6 +4,7 @@ import * as fs from "node:fs";
 import { getUserInput, setFilename, setUserInput, reportError } from "./utils";
 import type { CompileError } from "./types/error";
 import { converter } from "./tryVisitor";
+import { codeGen } from "./codeGen";
 
 const errorList: CompileError[] = [];
 
@@ -36,16 +37,10 @@ const compile = (args: string[]) => {
   // 変換
   const newAst = converter(ast.program);
 
-  return newAst;
-  // let offset = 0;
-  // for (let v: Var | null = ast.locals; v !== null; v = v.next) {
-  //   offset += 8;
-  //   v.offset = offset;
-  // }
-  // ast.stackSize = offset;
+  // コード生成
+  const output = codeGen(newAst);
 
-  // codeGen(ast);
-  // return output;
+  return output;
 };
 
 const main = (args: string[]) => {

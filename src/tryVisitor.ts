@@ -283,6 +283,6 @@ const visitor: Visitor = {
   },
 };
 
-export const converter = (input: ast.Node): newAst.Node => {
-  return visitNode(input, visitor);
+export const converter = (input: ast.Node): newAst.Program => {
+  return visitNode(input, visitor) as newAst.Program;
 };
