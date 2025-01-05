@@ -26,6 +26,7 @@ export type SimpleType = {
 export type StructType = {
   type: typeof STRUCT_TYPE.LIST | typeof STRUCT_TYPE.VECTOR;
   member: Type[];
+  count?: number;
 } & BaseType;
 
 export type Type = SimpleType | StructType | BaseType;

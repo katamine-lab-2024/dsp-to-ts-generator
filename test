@@ -1,4 +1,4 @@
-pointInQuarterCircle({R : real}, {X : real, Y : real})
+pointInQuarterCircle({R : r}, {X : r, Y : r})
 	method
 		X : real = for(0.0, R, 1.0);
 		D : real = sqrt(X^2 + Y^2);

@@ -194,24 +194,28 @@ const VARIABLE_NAME =
 const NUMBERS = /[0-9]/;
 
 const KEYWORDS = [
-  "return",
-  "for",
-  "when",
+  // 制御構文
   "method",
   "module",
-  "mod",
+  "end",
+  // モジュール
+  "select",
+  "for",
+  "sqrt",
+  "call",
+  "when",
+  "test",
+  // 型
   "integer",
   "real",
   "atom",
   "bool",
-  "sizeof",
-  "struct",
-  "end",
-  "test",
-  "call",
-  "sqrt",
+  "i",
+  "r",
+  "a",
+  "b",
 ] as const;
-const OPT = ["==", "\\=", "=<", ">=", "or", "and", "not"] as const;
+const OPT = ["==", "\\=", "=<", ">=", "or", "and", "not", "mod"] as const;
 const SINGLE_LETTER = [
   "+",
   "-",
@@ -230,7 +234,6 @@ const SINGLE_LETTER = [
   "[",
   "]",
   ",",
-  "&",
   "[",
   "]",
   ".",

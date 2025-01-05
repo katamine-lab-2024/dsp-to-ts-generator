@@ -212,16 +212,22 @@ export class Parser {
 
   /**
    * 単純変数の型名かどうか判定
-   * @returns {boolean}
+   * @returns {TypeKind | null} 単純変数の型名
    */
-  isSimpleTypeName(): boolean {
-    // 単純変数
+  isSimpleTypeName(): TypeKind | null {
+    const abbreviationMap: { [key: string]: TypeKind } = {
+      i: SIMPLE_TYPE.INTEGER,
+      r: SIMPLE_TYPE.REAL,
+      b: SIMPLE_TYPE.BOOL,
+      a: SIMPLE_TYPE.ATOM,
+    };
     for (const t of Object.values(SIMPLE_TYPE)) {
-      if (this.isCurrent(t)) {
-        return true;
-      }
+      if (this.isCurrent(t)) return t;
     }
-    return false;
+    for (const [k, v] of Object.entries(abbreviationMap)) {
+      if (this.isCurrent(k)) return v;
+    }
+    return null;
   }
 
   /**
@@ -230,11 +236,12 @@ export class Parser {
    */
   parseType(): Type {
     const tok = this.peek();
+    const s = this.isSimpleTypeName();
     // 単純変数
-    if (this.isSimpleTypeName()) {
+    if (s) {
       this.next();
       return {
-        type: tok.value as TypeKind,
+        type: s,
         token: tok,
       };
     }
