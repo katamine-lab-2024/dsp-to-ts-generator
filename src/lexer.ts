@@ -108,7 +108,14 @@ class Lexer {
         continue;
       }
 
-      // todo: コメントをスキップ?
+      // todo: コメントをスキップ
+      // `%` から行末までをコメントとして扱う
+      if (this.getChar() === "%") {
+        while (this.getChar() !== "\n") {
+          this.consumeChar();
+        }
+        continue;
+      }
       // todo: ブロックコメントをスキップ?
 
       // 予約語
@@ -137,7 +144,7 @@ class Lexer {
       // 識別子(関数名またはatom)
       if (IDENTIFIER.test(this.getChar())) {
         const val = this.accept(IDENT_NUM);
-        if ("(" === this.getChar()) {
+        if (this.getChar() === "(" || this.input[this.current + 1] === "(") {
           this.tokenList.push(this.newToken(TOKEN_TYPE.IDENT_FUNC, val));
           continue;
         }
@@ -210,10 +217,6 @@ const KEYWORDS = [
   "real",
   "atom",
   "bool",
-  "i",
-  "r",
-  "a",
-  "b",
 ] as const;
 const OPT = ["==", "\\=", "=<", ">=", "or", "and", "not", "mod"] as const;
 const SINGLE_LETTER = [
@@ -238,6 +241,10 @@ const SINGLE_LETTER = [
   "]",
   ".",
   '"',
+  "i",
+  "r",
+  "a",
+  "b",
 ] as const;
 
 /**
