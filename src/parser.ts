@@ -659,6 +659,18 @@ export class Parser {
         token: tok,
       };
     }
+    // "select" "(" list ")"
+    if (this.isCurrent("select")) {
+      this.next();
+      this.consume("(");
+      const list = this.parsePrimary() as Primary;
+      this.consume(")");
+      return {
+        type: NODE_TYPE.SELECT,
+        list: list,
+        token: tok,
+      };
+    }
     // "sqrt" "(" expr ")"
     if (this.isCurrent("sqrt")) {
       this.next();
@@ -688,21 +700,22 @@ export class Parser {
    * @returns {Expr} 論理式
    */
   parseLogical(): Expr {
-    const node = this.parseTerm();
+    let node = this.parseTerm();
     let token: Token;
     for (;;) {
       if (this.isCurrent("or")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.OR,
           lhs: node,
           rhs: this.parseTerm(),
           token: token,
         };
+      } else {
+        return node;
       }
-      return node;
     }
   }
 
@@ -711,21 +724,22 @@ export class Parser {
    * @returns {Expr} 項
    */
   parseTerm(): Expr {
-    const node = this.parseNotTerm();
+    let node = this.parseNotTerm();
     let token: Token;
     for (;;) {
       if (this.isCurrent("and")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.AND,
           lhs: node,
           rhs: this.parseNotTerm(),
           token: token,
         };
+      } else {
+        return node;
       }
-      return node;
     }
   }
 
@@ -750,36 +764,36 @@ export class Parser {
   }
 
   /**
-   * `equality = relational *("==" relational | "\=" relational)`
+   * `equality = relational *("=" relational | "\=" relational)`
    * @returns {Expr} 等価式
    */
   parseEquality(): Expr {
-    const node = this.parseRelational();
+    let node = this.parseRelational();
     let token: Token;
     for (;;) {
       if (this.isCurrent("=")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.EQ,
           lhs: node,
           rhs: this.parseRelational(),
           token: token,
         };
-      }
-      if (this.isCurrent("\\=")) {
+      } else if (this.isCurrent("\\=")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.NE,
           lhs: node,
           rhs: this.parseRelational(),
           token: token,
         };
+      } else {
+        return node;
       }
-      return node;
     }
   }
 
@@ -788,54 +802,52 @@ export class Parser {
    * @returns {Expr} 関係式
    */
   parseRelational(): Expr {
-    const node = this.parseAdd();
+    let node = this.parseAdd();
     let token: Token;
     for (;;) {
       if (this.isCurrent("<")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.LT,
           lhs: node,
           rhs: this.parseAdd(),
           token: token,
         };
-      }
-      if (this.isCurrent("=<")) {
+      } else if (this.isCurrent("=<")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.LE,
           lhs: node,
           rhs: this.parseAdd(),
           token: token,
         };
-      }
-      if (this.isCurrent(">")) {
+      } else if (this.isCurrent(">")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.LT,
           lhs: this.parseAdd(),
           rhs: node,
           token: token,
         };
-      }
-      if (this.isCurrent(">=")) {
+      } else if (this.isCurrent(">=")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.LE,
           lhs: this.parseAdd(),
           rhs: node,
           token: token,
         };
+      } else {
+        return node;
       }
-      return node;
     }
   }
 
@@ -844,32 +856,32 @@ export class Parser {
    * @returns {Expr} 加算式
    */
   parseAdd(): Expr {
-    const node = this.parseMul();
+    let node = this.parseMul();
     let token: Token;
     for (;;) {
       if (this.isCurrent("+")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.ADD,
           lhs: node,
           rhs: this.parseMul(),
           token: token,
         };
-      }
-      if (this.isCurrent("-")) {
+      } else if (this.isCurrent("-")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.SUB,
           lhs: node,
           rhs: this.parseMul(),
           token: token,
         };
+      } else {
+        return node;
       }
-      return node;
     }
   }
 
@@ -878,54 +890,52 @@ export class Parser {
    * @returns {Expr} 乗算式
    */
   parseMul(): Expr {
-    const node = this.parseUnary();
+    let node = this.parseUnary();
     let token: Token;
     for (;;) {
       if (this.isCurrent("*")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.MUL,
           lhs: node,
           rhs: this.parseUnary(),
           token: token,
         };
-      }
-      if (this.isCurrent("/")) {
+      } else if (this.isCurrent("/")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.DIV,
           lhs: node,
           rhs: this.parseUnary(),
           token: token,
         };
-      }
-      if (this.isCurrent("mod")) {
+      } else if (this.isCurrent("mod")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.MOD,
           lhs: node,
           rhs: this.parseUnary(),
           token: token,
         };
-      }
-      if (this.isCurrent("^")) {
+      } else if (this.isCurrent("^")) {
         token = this.peek();
         this.next();
-        return {
+        node = {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.POW,
           lhs: node,
           rhs: this.parseUnary(),
           token: token,
         };
+      } else {
+        return node;
       }
-      return node;
     }
   }
 
@@ -975,10 +985,18 @@ export class Parser {
       const list: Expr[] = [];
       if (!this.isCurrent("]")) {
         list.push(this.parseUnary());
-        while (this.isCurrent(",")) {
+        while (
+          this.isCurrent(",") &&
+          this.tokenList[this.current + 1].value !== "]"
+        ) {
           this.next();
           list.push(this.parseUnary());
         }
+        if (
+          this.isCurrent(",") &&
+          this.tokenList[this.current + 1].value === "]"
+        )
+          this.next();
       }
       this.consume("]");
       return {
@@ -993,10 +1011,18 @@ export class Parser {
       const member: Member[] = [];
       if (!this.isCurrent("}")) {
         member.push(this.parseMember());
-        while (this.isCurrent(",")) {
+        while (
+          this.isCurrent(",") &&
+          this.tokenList[this.current + 1].value !== "}"
+        ) {
           this.next();
           member.push(this.parseMember());
         }
+        if (
+          this.isCurrent(",") &&
+          this.tokenList[this.current + 1].value === "}"
+        )
+          this.next();
       }
       this.consume("}");
       return {
@@ -1029,7 +1055,7 @@ export class Parser {
         };
       // atom
       case TOKEN_TYPE.ATOM:
-        // todo: atomPoolが必要
+        // todo: atomPoolが必要?
         return {
           type: NODE_TYPE.ATOM,
           token: this.consume(TOKEN_TYPE.ATOM),

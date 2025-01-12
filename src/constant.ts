@@ -44,6 +44,7 @@ export const NODE_TYPE = {
   WHEN: "when",
   TEST: "test",
   FOR: "for",
+  SELECT: "select",
   CALL: "call",
   SQRT: "sqrt",
 } as const;
@@ -118,5 +119,6 @@ export const NEW_NODE_TYPE = {
   IF: "if",
   ELSE: "else",
   FOR: "for",
+  SELECT: "select",
   SQRT: "sqrt",
 } as const;

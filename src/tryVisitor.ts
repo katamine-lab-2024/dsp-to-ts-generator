@@ -15,6 +15,7 @@ type Visitor = {
   [NODE_TYPE.CALL_EXPR]: (node: ast.Expr) => newAst.Expr;
   [NODE_TYPE.SQRT]: (node: ast.SqrtNode) => newAst.SqrtNode;
   [NODE_TYPE.FOR]: (node: ast.ForNode) => newAst.ForNode;
+  [NODE_TYPE.SELECT]: (node: ast.SelectNode) => newAst.SelectNode;
   [NODE_TYPE.ASSIGN]: (node: ast.AssignNode) => newAst.AssignNode;
   [NODE_TYPE.TEST]: (node: ast.TestNode) => newAst.If;
   [stmtBlockType]: (node: ast.StmtBlock) => newAst.ClassNode;
@@ -39,6 +40,8 @@ function visitNode(node: ast.Node, visitor: Visitor): newAst.Node {
       return visitor[NODE_TYPE.SQRT](node as ast.SqrtNode);
     case NODE_TYPE.FOR:
       return visitor[NODE_TYPE.FOR](node as ast.ForNode);
+    case NODE_TYPE.SELECT:
+      return visitor[NODE_TYPE.SELECT](node as ast.SelectNode);
     case NODE_TYPE.ASSIGN:
       return visitor[NODE_TYPE.ASSIGN](node as ast.AssignNode);
     case NODE_TYPE.TEST:
@@ -171,6 +174,14 @@ const visitor: Visitor = {
       from: from,
       to: to,
       inc: inc,
+    };
+  },
+  [NODE_TYPE.SELECT]: (node: ast.SelectNode) => {
+    const list = visitNode(node.list, visitor) as newAst.Primary;
+    return {
+      type: NODE_TYPE.SELECT,
+      token: node.token,
+      list: list,
     };
   },
   [NODE_TYPE.ASSIGN]: (node: ast.AssignNode) => {

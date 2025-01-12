@@ -95,6 +95,12 @@ export type ForNode = {
   inc: Expr;
 } & BaseNode;
 
+// select
+export type SelectNode = {
+  type: typeof NODE_TYPE.SELECT;
+  list: Primary;
+} & BaseNode;
+
 // 数値演算
 // 平方根: sqrt
 export type SqrtNode = {
@@ -103,7 +109,7 @@ export type SqrtNode = {
 } & BaseNode;
 
 // 組み込みモジュール
-export type BuildInNode = ForNode | SqrtNode | Expr;
+export type BuildInNode = ForNode | SelectNode | SqrtNode | Expr;
 
 // 代入文
 export type AssignNode = {
