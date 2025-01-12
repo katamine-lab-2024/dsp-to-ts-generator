@@ -172,6 +172,9 @@ const buildInGen = (node: BuildInNode): string => {
     case "sqrt": {
       return "sqrt";
     }
+    case "select": {
+      return "select";
+    }
     default:
       return exprGen(node);
   }

@@ -1,0 +1,42 @@
+tRn (
+  {
+    _aUXPinList: [r],
+    _ModelList: [r],
+    _pinList: [r],
+    _cwTentList: [r],
+    _cdwTentList: [r],
+    _cdwWList: [r],
+    _cwWList: [r]
+  },
+  {
+    _cwTexit: r,
+    _cOP: r,
+    _cdwTexit: r,
+  })
+  method
+    _pin: real = select(_pinList);
+    _aUXPin: real = select(_aUXPinList);
+    _Model: real = select(_ModelList);
+    _cwTent: real = select(_cwTentList);
+    _cdwTent: real = select(_cdwTentList);
+    _cdwW: real = select(_cdwWList);
+    _cwW: real = select(_cwWList);
+    _q: real = (13.86 * _pin) + (90895.9 * _cwTent)
+      + (-66323.2 * _cdwTent) + (0 * _cwW) + (0 * _cdwW)
+      + (-0.0000366418 * _pin * _pin) + (-0.384187 * _pin * _cwTent)
+      + (0.220356 * _pin * _cdwTent) + (78.8856 * _pin * _cwW)
+      + (6.98206 * _pin * _cdwW) + (-2751.02 * _cwTent * _cwTent)
+      + (2906.12 * _cwTent * _cdwTent) + (0 * _cwTent * _cwW)
+      + (0 * _cwTent * _cdwW) + (-1051.24 * _cdwTent * _cdwTent)
+      + (0 * _cdwTent * _cwW) + (0 * _cdwTent * _cdwW)+ (0 * _cwW * _cwW)
+      + (0 * _cwW * _cdwW) + (0 * _cdwW * _cdwW) + 0;
+    _p: real = _pin + _aUXPin;
+    _rad: real = _q + _p;
+    _cwTexit: real = _cwTent - _q / (4.186 * _cwW * 10 ^ 6);
+    _cOP: real = _q / _p;
+    _cdwTexit: real = _cdwTent + _rad / (4.186 * _cdwW * 10 ^ 6);
+    test( _cwTexit > 0 and _cwTexit < 100);
+    test( _cOP > 5);
+    test( _cdwTexit > 0 and _cdwTexit < 100 );
+  end method;
+end module;

@@ -31,7 +31,10 @@ const classifyStatements = (
     const { stmt: innerStmt } = s;
 
     if (innerStmt.type === NODE_TYPE.ASSIGN) {
-      if (innerStmt.rhs.type === NODE_TYPE.FOR) {
+      if (
+        innerStmt.rhs.type === NODE_TYPE.FOR ||
+        innerStmt.rhs.type === NODE_TYPE.SELECT
+      ) {
         // 仮定
         categories.assume.push({
           type: "stmt-block",
@@ -47,7 +50,11 @@ const classifyStatements = (
         if (innerStmt.rhs.type === NODE_TYPE.SQRT)
           operands = collectVariables(innerStmt.rhs.expr, (v) => !v.isInput);
         if (innerStmt.rhs.type === NODE_TYPE.CALL_EXPR)
-          operands = collectVariables(innerStmt.rhs.lhs, (v) => !v.isInput);
+          operands = collectVariables(innerStmt.rhs, (v) => !v.isInput);
+        // operandsの中で重複しているものを削除
+        operands = operands.filter(
+          (v, i, self) => self.findIndex((s) => s.name === v.name) === i
+        );
         categories.calc.push({
           type: "stmt-block",
           token: s.token,
@@ -59,7 +66,9 @@ const classifyStatements = (
       }
     } else if (innerStmt.type === NODE_TYPE.TEST) {
       // 検証
-      const vars = collectVariables(innerStmt.cond as Expr);
+      const vars = collectVariables(innerStmt.cond as Expr).filter(
+        (v, i, self) => self.findIndex((s) => s.name === v.name) === i
+      );
       const target = vars.find((v) => !v.isInput) ?? vars[0];
       const operand = vars.filter((v) => v !== target);
       categories.test.push({
@@ -67,8 +76,8 @@ const classifyStatements = (
         token: s.token,
         body: [s],
         phase: "test",
-        target,
-        operand,
+        target: target,
+        operand: operand,
       });
     }
   }
@@ -99,14 +108,14 @@ const sortCalcStatements = (
 
   const calcWithAnalysis = calcList.map(analyzeOperand);
 
-  // assumeVarのみ
+  // assumeVarのみをopに持つ
   const inAssumeOnly = calcWithAnalysis.filter(
     (item) => item.opInfo.assumeVar !== 0 && item.opInfo.calcVar === 0
   );
   // それ以外
   const other = calcWithAnalysis.filter(
     (item) =>
-      item.opInfo.assumeVar > 0 &&
+      item.opInfo.assumeVar >= 0 &&
       item.opInfo.calcVar > 0 &&
       !inAssumeOnly.includes(item)
   );
@@ -114,15 +123,9 @@ const sortCalcStatements = (
   // それぞれsort
   inAssumeOnly.sort((a, b) => a.opInfo.assumeVar - b.opInfo.assumeVar);
   other.sort((a, b) => {
-    if (a.opInfo.assumeVar !== b.opInfo.assumeVar)
-      return a.opInfo.assumeVar - b.opInfo.assumeVar;
-    if (a.opInfo.calcVar !== b.opInfo.calcVar)
-      return a.opInfo.calcVar - b.opInfo.calcVar;
-    return (
-      a.opInfo.assumeVar +
-      a.opInfo.calcVar -
-      (b.opInfo.assumeVar + b.opInfo.calcVar)
-    );
+    const assume = b.opInfo.assumeVar - a.opInfo.assumeVar;
+    const calc = b.opInfo.calcVar - a.opInfo.calcVar;
+    return assume !== 0 ? assume : calc;
   });
 
   return inAssumeOnly.concat(other).map((item) => item.sb);
@@ -137,44 +140,55 @@ const mergeBlocks = (
 ): StmtBlock[] => {
   // 解決済みリスト
   const sorted: StmtBlock[] = [];
-
+  // 全てのstmtが解決するまで繰り返す
   while (
     sorted.length <
-    assumeList.length + testCalc.length + otherCalc.length
+    assumeList.length + testCalc.length + otherCalc.length + testList.length
   ) {
+    // testCalcごとのopを格納
     const opList: StmtBlock[][] = [];
+    // testCalcのoperandの状況を確認
     for (const calc of testCalc) {
-      const target = calc.operand ?? [];
+      // testCalcのoperand
+      const to = calc.operand ?? [];
+      // toのうち、sortedに含まれていないものを格納
       const ol: StmtBlock[] = [];
       // operandの状況
-      const isInAssume = assumeList.filter((op) =>
-        target.some((t) => t.name === op.target.name)
-      );
       const isInSorted = sorted.filter((sb) =>
-        target.some((t) => t.name === sb.target.name)
+        to.some((t) => t.name === sb.target.name)
+      );
+      const isInAssume = assumeList.filter((op) =>
+        to.some((t) => t.name === op.target.name && !sorted.includes(op))
       );
       // 条件を満たしていれば、sortedに追加
       // すでに解決済みの場合はスルー
       if (sorted.includes(calc)) continue;
-      switch (target.length) {
+      switch (to.length) {
+        // 1. toが全てassumeListに含まれている場合
         case isInAssume.length: {
-          // まだ解決していない仮定を追加
+          // toのうちまだ解決していない仮定を追加
           for (const op of isInAssume) {
             if (!sorted.includes(op)) {
               sorted.push(op);
             }
           }
+          // testCalcを追加
           sorted.push(calc);
+          // testを追加
           const test = testList.find((t) => t.target.name === calc.target.name);
           if (test && !sorted.includes(test)) sorted.push(test);
           break;
         }
+        // 2. toが全てsortedに含まれている場合
         case isInSorted.length: {
+          // testCalcを追加
           sorted.push(calc);
+          // testを追加
           const test = testList.find((t) => t.target.name === calc.target.name);
           if (test && !sorted.includes(test)) sorted.push(test);
           break;
         }
+        // 3. toがassumeListに含まれているものと、sortedに含まれているものがある場合
         case isInAssume.length + isInSorted.length: {
           // まだ解決していない仮定を追加
           for (const op of isInAssume) {
@@ -182,47 +196,118 @@ const mergeBlocks = (
               sorted.push(op);
             }
           }
+          // testCalcを追加
           sorted.push(calc);
+          // testを追加
           const test = testList.find((t) => t.target.name === calc.target.name);
           if (test && !sorted.includes(test)) sorted.push(test);
           break;
         }
+        // 4. まだoperandが解決していないものがある場合
         default: {
-          const notInSorted = otherCalc.find((oc) =>
-            target.includes(oc.target)
+          // toのうち、まだ解決していないoperandのcalcを格納
+          // const notInSorted = otherCalc.filter((oc) => to.includes(oc.target));
+          const notInSorted = otherCalc.filter(
+            (oc) =>
+              to.some((t) => t.name === oc.target.name) && !sorted.includes(oc)
           );
-          if (notInSorted && !sorted.includes(notInSorted))
-            ol.push(notInSorted);
+          // otherCalcの処理対象として追加
+          if (notInSorted?.every((item) => !sorted.includes(item)))
+            ol.push(...notInSorted);
           opList.push(ol);
           break;
         }
       }
     }
     // opListの処理
-    // todo: この辺も処理見直したい
     if (opList.length > 0) {
       for (const ol of opList) {
         for (const o of ol) {
           // oのoperandについて、全てsortedに含まれている、またはassumeListに含まれている方を、sortedに追加
           const target = o.operand ?? [];
-          for (const op of target) {
-            const isInAssume = assumeList.find(
-              (assume) => assume.target.name === op.name
-            );
-            const isInSorted = sorted.find((sb) => sb.target.name === op.name);
-            if (isInAssume) {
-              if (!sorted.includes(isInAssume)) {
-                sorted.push(isInAssume);
+          // for (const op of target) {
+          const isInSorted = sorted.filter((sb) =>
+            target.some((t) => t.name === sb.target.name)
+          );
+          const isInAssume = assumeList.filter((assume) =>
+            target.some(
+              (t) => t.name === assume.target.name && !sorted.includes(assume)
+            )
+          );
+          if (sorted.includes(o)) continue;
+          switch (target.length) {
+            case isInAssume.length: {
+              for (const op of isInAssume) {
+                if (!sorted.includes(op)) {
+                  sorted.push(op);
+                }
               }
-            } else if (isInSorted) {
-              if (!sorted.includes(isInSorted)) {
-                sorted.push(isInSorted);
-              }
+              sorted.push(o);
+              break;
             }
-            // どちらにも含まれていない場合、次回に処理するのでスルー
+            case isInSorted.length: {
+              sorted.push(o);
+              break;
+            }
+            case isInAssume.length + isInSorted.length: {
+              for (const op of isInAssume) {
+                if (!sorted.includes(op)) {
+                  sorted.push(op);
+                }
+              }
+              sorted.push(o);
+              break;
+            }
+            default: {
+              // スルー
+              break;
+            }
           }
         }
       }
+    }
+    // testに関わらないstmtの処理
+    if (testList.every((t) => sorted.includes(t))) {
+      for (const c of otherCalc) {
+        const isInSorted = sorted.filter((sb) =>
+          c.operand?.some((t) => t.name === sb.target.name)
+        );
+        const isInAssume = assumeList.filter((op) =>
+          c.operand?.some(
+            (t) => t.name === op.target.name && !sorted.includes(op)
+          )
+        );
+        if (sorted.includes(c)) continue;
+        switch (c.operand?.length) {
+          case isInAssume.length: {
+            for (const op of isInAssume) {
+              if (!sorted.includes(op)) {
+                sorted.push(op);
+              }
+            }
+            sorted.push(c);
+            break;
+          }
+          case isInSorted.length: {
+            sorted.push(c);
+            break;
+          }
+          case isInAssume.length + isInSorted.length: {
+            for (const op of isInAssume) {
+              if (!sorted.includes(op)) {
+                sorted.push(op);
+              }
+            }
+            sorted.push(c);
+            break;
+          }
+          default: {
+            // スルー
+            break;
+          }
+        }
+      }
+      for (const a of assumeList) if (!sorted.includes(a)) sorted.push(a);
     }
   }
   return sorted;
