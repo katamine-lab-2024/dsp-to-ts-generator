@@ -313,6 +313,30 @@ const mergeBlocks = (
   return sorted;
 };
 
+const margeCalcTest = (sorted: StmtBlock[]) => {
+  let i = 0;
+  while (i < sorted.length) {
+    const s = sorted[i];
+    // testじゃなかったら、次へ
+    if (s.phase !== "test") {
+      i++;
+      continue;
+    }
+    const calc = sorted[i - 1];
+    // sとcalcのbodyを結合
+    const body = calc.body.concat(s.body);
+    // sortedからcalcを削除
+    sorted.splice(i - 1, 1);
+    // sortedのs.bodyをbodyに置き換え
+    sorted[i - 1] = {
+      ...calc,
+      body,
+    };
+    i++;
+  }
+  return sorted;
+};
+
 // Main function to sort statements
 export const sortStmt = (predicates: StmtNode[]): StmtBlock[] => {
   // stmtの種類を分類
@@ -328,8 +352,15 @@ export const sortStmt = (predicates: StmtNode[]): StmtBlock[] => {
   // それ以外のcalc
   const otherCalc = calc.filter((c) => !testCalc.includes(c));
 
+  // それぞれのcalcをソート
   const sortedTestCalc = sortCalcStatements(testCalc, assume);
   const sortedOtherCalc = sortCalcStatements(otherCalc, assume);
 
-  return mergeBlocks(assume, sortedTestCalc, sortedOtherCalc, test);
+  // assume, calc, testをソートして結合
+  const sorted = mergeBlocks(assume, sortedTestCalc, sortedOtherCalc, test);
+
+  // testとその前のcalcのbodyを、結合する
+  const result: StmtBlock[] = margeCalcTest(sorted);
+
+  return result;
 };
