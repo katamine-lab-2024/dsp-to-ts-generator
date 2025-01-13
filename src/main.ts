@@ -4,7 +4,7 @@ import * as fs from "node:fs";
 import { getUserInput, setFilename, setUserInput, reportError } from "./utils";
 import type { CompileError } from "./types/error";
 import { converter } from "./converter";
-import { codeGen } from "./codeGen";
+import { codeGen } from "./try-codegen";
 
 const errorList: CompileError[] = [];
 
@@ -33,14 +33,14 @@ const compile = (args: string[]) => {
   // 変換
   const newAst = converter(ast.program);
   // コード生成
-  // const output = codeGen(newAst);
-  return newAst;
+  const output = codeGen(newAst);
+  return output;
 };
 
 const main = (args: string[]) => {
   try {
     const output = compile(args);
-    console.dir(output, { depth: null });
+    console.log(output);
   } catch (e) {
     reportError(errorList);
   }
