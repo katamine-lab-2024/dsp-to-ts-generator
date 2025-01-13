@@ -16,7 +16,9 @@ type Visitor = {
   [NODE_TYPE.SQRT]: (node: ast.SqrtNode) => newAst.SqrtNode;
   [NODE_TYPE.FOR]: (node: ast.ForNode) => newAst.ForNode;
   [NODE_TYPE.SELECT]: (node: ast.SelectNode) => newAst.SelectNode;
-  [NODE_TYPE.ASSIGN]: (node: ast.AssignNode) => newAst.AssignNode;
+  [NODE_TYPE.ASSIGN]: (
+    node: ast.AssignNode
+  ) => newAst.AssignNode | newAst.Return;
   [NODE_TYPE.TEST]: (node: ast.TestNode) => newAst.If;
   [stmtBlockType]: (node: ast.StmtBlock) => newAst.ClassNode;
   [NODE_TYPE.BLOCK]: (node: ast.Block) => newAst.ClassNode;
@@ -109,6 +111,8 @@ const convertType = (type: Type): NewType => {
   }
 };
 
+const params: newAst.VarNode[] = [];
+
 // Visitorの実装
 const visitor: Visitor = {
   [NODE_TYPE.NUM]: (node) => {
@@ -118,9 +122,11 @@ const visitor: Visitor = {
     };
   },
   [NODE_TYPE.VAR]: (node) => {
+    const isInParam = params.some((p) => p.name === node.name);
     return {
       type: NODE_TYPE.VAR,
       token: node.token,
+      isInParam: isInParam,
       name: node.name,
       valueType: convertType(node.valueType),
     };
@@ -130,6 +136,7 @@ const visitor: Visitor = {
     return {
       type: NODE_TYPE.VAR,
       token: node.token,
+      isInParam: v.isInParam,
       name: v.name,
       valueType: v.valueType,
     };
@@ -186,13 +193,40 @@ const visitor: Visitor = {
   },
   [NODE_TYPE.ASSIGN]: (node: ast.AssignNode) => {
     const lhs = visitNode(node.lhs, visitor) as newAst.VarNode;
-    const rhs = visitNode(node.rhs, visitor) as newAst.Expr;
-    return {
+    const rhs = visitNode(node.rhs, visitor);
+    if (rhs.type === NEW_NODE_TYPE.FOR || rhs.type === NEW_NODE_TYPE.SELECT) {
+      let value: newAst.BuildInNode;
+      if (rhs.type === NEW_NODE_TYPE.FOR) {
+        value = {
+          type: rhs.type,
+          token: lhs.token,
+          target: lhs,
+          from: rhs.from,
+          to: rhs.to,
+          inc: rhs.inc,
+        };
+      } else {
+        value = {
+          type: rhs.type,
+          token: lhs.token,
+          target: lhs,
+          list: rhs.list,
+        };
+      }
+      const r: newAst.Return = {
+        type: NEW_NODE_TYPE.RETURN,
+        token: node.token,
+        value: value,
+      };
+      return r;
+    }
+    const a: newAst.AssignNode = {
       type: NODE_TYPE.ASSIGN,
       token: node.token,
       lhs: lhs,
-      rhs: rhs,
+      rhs: rhs as newAst.Expr,
     };
+    return a;
   },
   [NODE_TYPE.TEST]: (node: ast.TestNode) => {
     const cond = visitNode(node.cond, visitor) as newAst.Expr;
@@ -254,6 +288,7 @@ const visitor: Visitor = {
     const value = member.map((param) =>
       visitNode(param, visitor)
     ) as newAst.VarNode[];
+    params.push(...value);
     return {
       type: NEW_NODE_TYPE.PARAM,
       token: node.token,
@@ -261,6 +296,12 @@ const visitor: Visitor = {
     };
   },
   [NODE_TYPE.MODULE]: (node: ast.Module) => {
+    // field[0]は入力変数
+    // field[1]は出力変数
+    const field = node.paramList.map((param) =>
+      visitNode(param, visitor)
+    ) as newAst.ParamNode[];
+
     const body = node.body.map((stmt) =>
       visitNode(stmt, visitor)
     ) as newAst.MethodNode[];
@@ -269,11 +310,6 @@ const visitor: Visitor = {
       (inner as newAst.Class).name = `${i}`;
       i++;
     }
-    // field[0]は入力変数
-    // field[1]は出力変数
-    const field = node.paramList.map((param) =>
-      visitNode(param, visitor)
-    ) as newAst.ParamNode[];
 
     return {
       type: NEW_NODE_TYPE.CLASS,

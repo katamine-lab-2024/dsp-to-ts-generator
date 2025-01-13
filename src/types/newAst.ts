@@ -29,6 +29,7 @@ export type LiteralNode = {
 // 変数
 export type VarNode = {
   type: typeof NEW_NODE_TYPE.VAR;
+  isInParam: boolean;
   name: string;
   valueType: NewType;
 } & BaseNode;
@@ -88,6 +89,7 @@ export type Expr = Primary | UnaryNode | BinaryNode;
 // for
 export type ForNode = {
   type: typeof NEW_NODE_TYPE.FOR;
+  target?: Primary;
   from: Expr;
   to: Expr;
   inc: Expr;
@@ -95,6 +97,7 @@ export type ForNode = {
 
 export type SelectNode = {
   type: typeof NEW_NODE_TYPE.SELECT;
+  target?: Primary;
   list: Primary;
 } & BaseNode;
 
