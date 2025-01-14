@@ -4,7 +4,7 @@ import * as fs from "node:fs";
 import { getUserInput, setFilename, setUserInput, reportError } from "./utils";
 import type { CompileError } from "./types/error";
 import { converter } from "./converter";
-import { codeGen } from "./try-codegen";
+import { codeGen } from "./codeGen";
 
 const errorList: CompileError[] = [];
 

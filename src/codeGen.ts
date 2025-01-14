@@ -1,202 +1,319 @@
 import type {
   BuildInNode,
+  Class,
   Expr,
-  Method,
   Program,
   StmtNode,
   VarNode,
 } from "./types/newAst";
 
-// todo: 小さいnodeを出力しながら発展させる開発をすべき
+/**
+ *
+ * @param prog
+ * @returns
+ */
 
 export const codeGen = (prog: Program) => {
-  let output: string;
-  // import文
-  const libs = 'import type { VM, Predicate, Variable, List } from "./libs";\n';
-  const buildIn = 'import { Member, Test } from "./buildIn";\n';
-  output = libs.concat(buildIn);
+  // import
+  const libs =
+    'import { type VM, type List, type IC, Variable, createInnerClass, Predicate, } from "./libs";';
+  const buildIn = 'import { Member, Test } from "./buildIn";';
+  const output = [libs, buildIn, ""];
+  const classList = prog.body.filter((stmt) => stmt.type !== "dummy");
+  const classContents: string[][] = [];
   // class
-  for (const method of prog.body) {
-    // dummyを除外
-    if (method.type === "dummy") continue;
-    // class name
-    const name = method.name;
-    const classDecl = `export class ${name.toUpperCase()} implements Predicate {\n`;
-    output.concat(classDecl);
-    // field
-    const fieldList = method.fieldList
-      .map((param) => {
-        if (param.type === "dummy") return;
-        param.value.map((varNode) => {
-          return `public ${varNode.name}: ${varNode.type};`;
-        });
-      })
-      .join("\n")
-      .concat("private cont: Predicate;");
-    output.concat(fieldList);
-    // constructor
-    const construct = "public constructor(\n".concat(
-      method.fieldList
-        .map((param) => {
-          if (param.type === "dummy") return;
-          param.value.map((varNode) => {
-            return `${varNode.name}: ${varNode.type}`;
-          });
-        })
-        .join(",\n")
-        .concat("cont: Predicate\n"),
-      ") {\n",
-      method.fieldList
-        .map((param) => {
-          if (param.type === "dummy") return;
-          param.value.map((varNode) => {
-            return `this.${varNode.name} = ${varNode.name};`;
-          });
-        })
-        .join("\n")
-        .concat("this.cont = cont;"),
-      "}"
-    );
-    output.concat(construct);
-    // body
-    // bodyに含まれているclassを取得
-    const blockList = method.body.filter((stmt) => stmt.type === "class");
-    // exec
-    const exec = "public exec(vm: VM): Predicate {\n".concat(
-      blockList
-        .map((block) => {
-          // todo: whenなどで分岐するときの対応. blockに条件の情報を追加する？
-          return `return new this.Method_${block.name}().exec(vm);`;
-        })
-        .join("\n"),
-      "}"
-    );
-    output.concat(exec);
-
-    // block class
-    for (const block of blockList) {
-      const blockName = `Method_${block.name}`;
-      const declareBlockClass = `public ${blockName}: IC = createInnerClass(this).with(\n(outerThis) =>\nclass implements Predicate {\n`;
-      output.concat(declareBlockClass);
-      const blockField = block.fieldList
-        .map((param) => {
-          if (param.type === "dummy") return;
-          param.value.map((varNode) => {
-            // todo: 多分あってるけどVariable前提で良いのかな
-            return `private ${varNode.name}: ${varNode.type} = new ${varNode.type}();`;
-          });
-        })
-        .join("\n");
-      output.concat(blockField);
-      // bodyに含まれているclassを取得
-      const stmtList = block.body.filter((stmt) => stmt.type === "class");
-      // exec
-      // stmtListの一番目が対象
-      const execBlock = `public exec(vm: VM): Predicate {\nreturn this.${blockName.toLowerCase()}_cu${
-        stmtList[0].name
-      }.exec(vm);\n}`;
-      output.concat(execBlock);
-
-      // stmt class
-      for (const stmt of stmtList) {
-        const stmtName = `${blockName}_cu${stmt.name}`;
-        const declareStmtClass = `public ${stmtName}: IC = createInnerClass(this).with(\n(methodThis) =>\nclass implements Predicate {\n`;
-        output.concat(declareStmtClass);
-        //exec
-        const execDecl = "public exec(vm: VM): Predicate {\n";
-        output.concat(execDecl);
-        const execBody = (stmt.body as Method[])
-          .map((method) =>
-            // stmtGen()
-            method.body.map((stmt) => stmtGen(stmt)).join("\n")
-          )
-          .join("\n");
-        output.concat(execBody);
-        const stmtEnd = "}\n);";
-        output.concat(stmtEnd);
-      }
-
-      // stmt class field
-      const stmtField = stmtList
-        .map((stmt) => {
-          return `private ${blockName.toLowerCase()}_cu${
-            stmt.name
-          } = new this.${blockName}_cu${stmt.name}();`;
-        })
-        .join("\n");
-      output.concat(stmtField);
-      // block class end
-      const blockEnd = "}\n);";
-      output.concat(blockEnd);
-    }
+  for (const module of classList) {
+    classContents.push([...codeClass(module), ""]);
   }
-  const classEnd = "}\n";
-  output.concat(classEnd);
-  return output;
+  output.push(...classContents.flat());
+  return output.join("\n");
 };
 
-const stmtGen = (stmt: StmtNode): string => {
+const codeClass = (module: Class): string[] => {
+  // クラス宣言
+  const name = module.name;
+  const classDecl = `export class ${
+    name.charAt(0).toUpperCase() + name.slice(1)
+  } implements Predicate {`;
+  // フィールド
+  const field = [
+    ...module.fieldList
+      .filter((p) => p.type !== "dummy")
+      .flatMap((p) => p.value.map((v) => `  private ${v.name}: Variable;`)),
+    "  private cont: Predicate;",
+    "",
+  ];
+  // コンストラクタ
+  const construct = [
+    "  public constructor(",
+    ...module.fieldList
+      .filter((p) => p.type !== "dummy")
+      .flatMap((p) => p.value.map((v) => `    ${v.name}: Variable,`)),
+    "    cont: Predicate",
+    "  ) {",
+    ...module.fieldList
+      .filter((p) => p.type !== "dummy")
+      .flatMap((p) => p.value.map((v) => `    this.${v.name} = ${v.name};`)),
+    "    this.cont = cont;",
+    "  }",
+    "",
+  ];
+  // block
+  const blockList = module.body.filter((stmt) => stmt.type === "class");
+  // execメソッド
+  const exec = [
+    "  public exec(vm: VM): Predicate {",
+    ...blockList.map(
+      (block) =>
+        // todo: blockが複数ある場合の対応
+        `    return new this.Method_${block.name}().exec(vm);`
+    ),
+    "  }",
+    "",
+  ];
+  const blockContents: string[][] = [];
+  // blockクラス
+  for (const block of blockList) {
+    blockContents.push([...codeBlock(block), ""]);
+  }
+  return [
+    classDecl,
+    ...field,
+    ...construct,
+    ...exec,
+    ...blockContents.flat(),
+    "}",
+  ];
+};
+
+const codeBlock = (block: Class): string[] => {
+  const name = `Method_${block.name}`;
+  const classDecl = [
+    `  public ${name}: IC = createInnerClass(this).with(`,
+    "    (outerThis) =>",
+    "      class implements Predicate {",
+  ];
+  // フィールド
+  const field = [
+    ...block.fieldList
+      .filter((p) => p.type !== "dummy")
+      .flatMap((p) =>
+        p.value.map((v) => `        private ${v.name}: Variable;`)
+      ),
+    "",
+  ];
+  // stmt
+  const stmtList = block.body.filter(
+    (stmt) => stmt.type !== "dummy" && stmt.type !== "method"
+  );
+  // execメソッド
+  const exec = [
+    "        public exec(vm: VM): Predicate {",
+    `          return this.${name.toLowerCase()}_cu${
+      stmtList[0].name
+    }.exec(vm);`,
+    "        }",
+    "",
+  ];
+  // stmtクラス
+  const stmtContents: string[][] = [];
+  for (let i = 0; i < stmtList.length; i++) {
+    const stmt = stmtList[i];
+    const nextName = stmtList[i + 1] ? stmtList[i + 1].name : undefined;
+    stmtContents.push([...codeStmt(stmt, name, nextName), ""]);
+  }
+  const stmtInstanceList = stmtList.map(
+    (s) =>
+      `        private ${name.toLowerCase()}_cu${s.name} = new this.${name}_cu${
+        s.name
+      }();`
+  );
+  return [
+    ...classDecl,
+    ...field,
+    ...exec,
+    ...stmtContents.flat(),
+    ...stmtInstanceList,
+    "      }",
+    "  );",
+  ];
+};
+
+const codeStmt = (
+  stmt: Class,
+  blockName: string,
+  cont: string | undefined
+): string[] => {
+  const c = cont
+    ? `methodThis.${blockName.toLowerCase()}_cu${cont}`
+    : "outerThis.cont";
+
+  const name = `${blockName}_cu${stmt.name}`;
+  const classDecl = [
+    `        public ${name}: IC = createInnerClass(this).with(`,
+    "          (methodThis) =>",
+    "            class implements Predicate {",
+  ];
+  // execメソッド
+  const execBodyContents: string[] = [];
+  const methodList = stmt.body.filter(
+    (stmt) => stmt.type !== "dummy" && stmt.type !== "class"
+  );
+  for (const method of methodList) {
+    execBodyContents.push(
+      ...method.body.flatMap((stmt) =>
+        [
+          stmtGen(stmt, c),
+          // もしstmtがmethod.bodyの最後、かつtypeがassignなら、return cont
+          stmt === method.body[method.body.length - 1] && stmt.type === "assign"
+            ? `                return ${c};\n`
+            : "",
+        ].join("")
+      )
+    );
+  }
+  const exec = [
+    "              public exec(vm: VM) {",
+    ...execBodyContents,
+    "              }",
+  ];
+  return [...classDecl, ...exec, "            }", "        );"];
+};
+
+const stmtGen = (stmt: StmtNode, cont: string | undefined): string => {
   switch (stmt.type) {
     case "if": {
-      const ifDecl = "if";
-      // todo: exprを処理する関数を作成する必要
-      const cond: string = "(!".concat(exprGen(stmt.cond), ")");
-      const then = "{\n".concat(
-        stmt.then
-          ? stmt.then.map((t) => stmtGen(t)).join("\n")
-          : "return Predicate.failure;\n",
-        "}\n"
-      );
-      const returnCont = " return outerThis.cont;\n";
-      return ifDecl.concat(cond, then, returnCont);
+      return [
+        `                if (!(${exprGen(stmt.cond, false)})) {`,
+        // stmt.then
+        //   ? `                ${stmt.then.map((t) => stmtGen(t)).join("\n")}`
+        //   : "                return Predicate.failure;",
+        "                  return Predicate.failure;",
+        "                }",
+        `                return ${cont};`,
+      ].join("\n");
     }
     case "assign": {
-      // const assignedScope;
-      const assignedName = (stmt.lhs as VarNode).name;
-      const assignedValue: string = buildInGen(stmt.rhs);
-      // todo: block scopeじゃないかもしれんけど一旦block scope前提
-      return `methodThis.${assignedName}.setValue(${assignedValue});\n`;
+      const ths = (stmt.lhs as VarNode).isInParam ? "outerThis" : "methodThis";
+      return [
+        `                ${ths}.${
+          (stmt.lhs as VarNode).name
+        }.setValue(${buildInGen(stmt.rhs, cont)});`,
+      ].join("\n");
     }
-    case "return":
-      return `return ${buildInGen(stmt.value)};\n`;
+    case "return": {
+      return `                return ${buildInGen(stmt.value, cont)};`;
+    }
     default:
       return "";
   }
 };
 
-const buildInGen = (node: BuildInNode): string => {
-  switch (node.type) {
+const buildInGen = (buildIn: BuildInNode, cont: string | undefined): string => {
+  switch (buildIn.type) {
     case "for": {
-      return "for";
-    }
-    case "sqrt": {
-      return "sqrt";
+      return [
+        "For(",
+        buildIn.target ? primaryGen(buildIn.target, true) : "",
+        ", ",
+        ...exprGen(buildIn.from, true),
+        ", ",
+        ...exprGen(buildIn.to, true),
+        ", ",
+        ...exprGen(buildIn.inc, true),
+        ", ",
+        cont,
+        ")",
+      ].join("");
     }
     case "select": {
-      return "select";
+      return [
+        "Member(",
+        buildIn.target ? primaryGen(buildIn.target, true) : "",
+        ", ",
+        ...exprGen(buildIn.list, true),
+        ", ",
+        cont,
+        ")",
+      ].join("");
+    }
+    case "sqrt": {
+      return ["Math.sqrt(", ...exprGen(buildIn.expr, false), ")"].join("");
     }
     default:
-      return exprGen(node);
+      return exprGen(buildIn, false);
   }
 };
 
-const exprGen = (node: Expr): string => {
-  if (node.type === "call-expr") {
-    return "";
+const exprGen = (expr: Expr, isVarRef: boolean): string => {
+  if (expr.type === "call-expr") {
+    switch (expr.callee) {
+      case "add": {
+        return `${exprGen(expr.lhs, false)} + ${exprGen(expr.rhs, false)}`;
+      }
+      case "sub": {
+        return `${exprGen(expr.lhs, false)} - ${exprGen(expr.rhs, false)}`;
+      }
+      case "mul": {
+        return `${exprGen(expr.lhs, false)} * ${exprGen(expr.rhs, false)}`;
+      }
+      case "div": {
+        return `${exprGen(expr.lhs, false)} / ${exprGen(expr.rhs, false)}`;
+      }
+      case "mod": {
+        return `${exprGen(expr.lhs, false)} % ${exprGen(expr.rhs, false)}`;
+      }
+      case "pow": {
+        return `${exprGen(expr.lhs, false)} ** ${exprGen(expr.rhs, false)}`;
+      }
+      case "EQ": {
+        return `${exprGen(expr.lhs, false)} === ${exprGen(expr.rhs, false)}`;
+      }
+      case "NE": {
+        return `${exprGen(expr.lhs, false)} !== ${exprGen(expr.rhs, false)}`;
+      }
+      case "LT": {
+        return `${exprGen(expr.lhs, false)} < ${exprGen(expr.rhs, false)}`;
+      }
+      case "LE": {
+        return `${exprGen(expr.lhs, false)} <= ${exprGen(expr.rhs, false)}`;
+      }
+      case "and": {
+        return `${exprGen(expr.lhs, false)} && ${exprGen(expr.rhs, false)}`;
+      }
+      case "or": {
+        return `${exprGen(expr.lhs, false)} || ${exprGen(expr.rhs, false)}`;
+      }
+      case "not": {
+        return `!${exprGen(expr.lhs, false)}`;
+      }
+      case "neg": {
+        return `-${exprGen(expr.lhs, false)}`;
+      }
+      default:
+        return "";
+    }
   }
-  return primaryGen(node);
+  return primaryGen(expr, isVarRef);
 };
 
-const primaryGen = (node: Expr): string => {
-  switch (node.type) {
-    case "num":
-      return node.token.value;
-    case "string":
-      return node.token.value;
-    case "boolean":
-      return node.token.value;
-    case "var":
-      return `methodThis.${node.name}.getValue()`;
+const primaryGen = (primary: Expr, isVarRef: boolean): string => {
+  switch (primary.type) {
+    case "num": {
+      return primary.token.value;
+    }
+    case "string": {
+      return primary.token.value;
+    }
+    case "boolean": {
+      return primary.token.value;
+    }
+    case "var": {
+      const ths = primary.isInParam ? "outerThis" : "methodThis";
+      return isVarRef
+        ? `${ths}.${primary.name}`
+        : `${ths}.${primary.name}.getValue()`;
+    }
     default:
       return "";
   }
