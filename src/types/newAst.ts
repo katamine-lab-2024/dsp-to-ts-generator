@@ -1,6 +1,7 @@
-import type { NEW_NODE_TYPE, OP_TYPE } from "../constant";
+import type { NEW_NODE_TYPE, NODE_TYPE, OP_TYPE } from "../constant";
 import type { Token } from "./token";
 import type { NewType } from "./type";
+import type * as ast from "./ast";
 
 // 構文木
 export type NodeType = (typeof NEW_NODE_TYPE)[keyof typeof NEW_NODE_TYPE];
@@ -188,3 +189,24 @@ export type Node =
   | ClassNode
   | Param
   | Program;
+
+const stmtBlockType = "stmt-block" as const;
+
+// Visitorの型を定義
+export type Visitor = {
+  [NODE_TYPE.NUM]: (node: ast.LiteralNode) => LiteralNode;
+  [NODE_TYPE.VAR]: (node: ast.VarNode) => VarNode;
+  //todo: 本来は違うけど、paramのためにvarNode
+  [NODE_TYPE.MEMBER]: (node: ast.Member) => VarNode;
+  [NODE_TYPE.CALL_EXPR]: (node: ast.Expr) => Expr;
+  [NODE_TYPE.SQRT]: (node: ast.SqrtNode) => SqrtNode;
+  [NODE_TYPE.FOR]: (node: ast.ForNode) => ForNode;
+  [NODE_TYPE.SELECT]: (node: ast.SelectNode) => SelectNode;
+  [NODE_TYPE.ASSIGN]: (node: ast.AssignNode) => AssignNode | Return;
+  [NODE_TYPE.TEST]: (node: ast.TestNode) => If;
+  [stmtBlockType]: (node: ast.StmtBlock) => ClassNode;
+  [NODE_TYPE.BLOCK]: (node: ast.Block) => ClassNode;
+  [NODE_TYPE.PARAM]: (node: ast.ParamNode) => ParamNode;
+  [NODE_TYPE.MODULE]: (node: ast.Module) => ClassNode;
+  [NODE_TYPE.PROGRAM]: (node: ast.Program) => Program;
+};

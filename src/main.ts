@@ -6,9 +6,17 @@ import type { CompileError } from "./types/error";
 import { converter } from "./converter";
 import { codeGen } from "./codeGen";
 
+/**
+ * エラーリスト
+ */
 const errorList: CompileError[] = [];
 
-const compile = (args: string[]) => {
+/**
+ * コンパイル
+ * @param args
+ * @returns {string} コンパイル結果
+ */
+const compile = (args: string[]): string => {
   if (args.length !== 1) {
     throw new Error("Usage: node dist/main.js <filename>");
   }
@@ -37,6 +45,10 @@ const compile = (args: string[]) => {
   return output;
 };
 
+/**
+ * メイン関数
+ * @param args
+ */
 const main = (args: string[]) => {
   try {
     const output = compile(args);

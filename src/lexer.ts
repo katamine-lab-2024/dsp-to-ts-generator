@@ -108,7 +108,6 @@ class Lexer {
         continue;
       }
 
-      // todo: コメントをスキップ
       // `%` から行末までをコメントとして扱う
       if (this.getChar() === "%") {
         while (this.getChar() !== "\n") {
@@ -116,7 +115,6 @@ class Lexer {
         }
         continue;
       }
-      // todo: ブロックコメントをスキップ?
 
       // 予約語
       const reserved = this.getReserved([...KEYWORDS, ...OPT]);
@@ -193,12 +191,20 @@ class Lexer {
   }
 }
 
+/**
+ ****** 正規表現 ******
+ */
+
 const WHITESPACE = /(\s|\t)/;
 const IDENTIFIER = /[a-zA-Z_]/;
 const IDENT_NUM = /[a-zA-Z0-9_]/;
 const VARIABLE_NAME =
   /[a-zA-Z0-9_\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}\p{Script=Greek}]/u;
 const NUMBERS = /[0-9]/;
+
+/**
+ ****** 予約語 ******
+ */
 
 const KEYWORDS = [
   // 制御構文

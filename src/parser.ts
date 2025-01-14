@@ -24,7 +24,7 @@ import {
 import type { Type, TypeKind } from "./types/type";
 
 // 構文解析の結果
-export type ParseResult = {
+type ParseResult = {
   errorList: CompileError[];
   program: Program;
 };
@@ -50,7 +50,7 @@ type Scope = {
  * @class Parser
  * @method {ParseResult} exec 構文解析を実行
  */
-export class Parser {
+class Parser {
   /** 入力: トークンリスト */
   tokenList: Token[] = [];
   /** 現在見ているトークンのindex */
@@ -1031,15 +1031,6 @@ export class Parser {
         token: tok,
       };
     }
-    // bool
-    // if (this.isCurrent("true") || this.isCurrent("false")) {
-    //   const tok = this.peek();
-    //   this.next();
-    //   return {
-    //     type: NODE_TYPE.BOOL,
-    //     token: tok,
-    //   };
-    // }
     switch (this.peek().type) {
       // number
       case TOKEN_TYPE.NUMBER:
