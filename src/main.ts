@@ -16,7 +16,7 @@ const errorList: CompileError[] = [];
  * @param args
  * @returns {string} コンパイル結果
  */
-const compile = (args: string[]): string => {
+const compile = (args: string[]) => {
   if (args.length !== 1) {
     throw new Error("Usage: node dist/main.js <filename>");
   }

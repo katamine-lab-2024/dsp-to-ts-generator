@@ -12,6 +12,9 @@ tRn (
     _cwTexit: r,
     _cOP: r,
     _cdwTexit: r,
+    _constraint_cwTexit: b,
+    _constraint_cOP: b,
+    _constraint_cdwTexit: b
   })
   method
     _pin: real = select(_pinList);
@@ -35,8 +38,8 @@ tRn (
     _cwTexit: real = _cwTent - _q / (4.186 * _cwW * 10 ^ 6);
     _cOP: real = _q / _p;
     _cdwTexit: real = _cdwTent + _rad / (4.186 * _cdwW * 10 ^ 6);
-    test( _cwTexit > 0 and _cwTexit < 100);
-    test( _cOP > 5);
-    test( _cdwTexit > 0 and _cdwTexit < 100 );
+    _constraint_cwTexit: bool = test( _cwTexit > 0 and _cwTexit < 100);
+    _constraint_cOP: bool = test( _cOP > 5);
+    _constraint_cdwTexit: bool = test( _cdwTexit > 0 and _cdwTexit < 100 );
   end method;
 end module;

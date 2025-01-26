@@ -1,3 +1,4 @@
+import { NEW_STRUCT_TYPE } from "./constant";
 import type {
   BuildInNode,
   Class,
@@ -6,6 +7,7 @@ import type {
   StmtNode,
   VarNode,
 } from "./types/newAst";
+import type { NewType } from "./types/type";
 
 class CodeGenerator {
   private prog: Program;
@@ -15,17 +17,54 @@ class CodeGenerator {
     this.prog = prog;
   }
 
+  private _getTypeMember = (f: NewType, isDecl: boolean): string => {
+    if (f.type === NEW_STRUCT_TYPE.ARRAY) {
+      let innerMemberType = "";
+      if (
+        f.member[0].type === NEW_STRUCT_TYPE.ARRAY ||
+        f.member[0].type === NEW_STRUCT_TYPE.OBJECT
+      ) {
+        innerMemberType = this._getTypeMember(f.member[0], isDecl);
+      }
+      innerMemberType = f.member[0].type;
+      return isDecl ? `${innerMemberType}[]` : `List<${innerMemberType}>`;
+    }
+    if (f.type === NEW_STRUCT_TYPE.OBJECT) {
+      const innerMemberType = f.member.map((m) => {
+        if (
+          m.type === NEW_STRUCT_TYPE.ARRAY ||
+          m.type === NEW_STRUCT_TYPE.OBJECT
+        ) {
+          return this._getTypeMember(m, isDecl);
+        }
+        return m.type;
+      });
+      return isDecl
+        ? `{${innerMemberType.map((m, i) => `${i}: ${m};`).join(" ")}}`
+        : `List<{${innerMemberType.map((m, i) => m).join(" | ")}>`;
+    }
+    return isDecl ? f.type : `Variable<${f.type}>`;
+  };
+
   public generate(): string {
     this.addImports();
     this.addClasses();
+    this.genMain();
     return this.output.join("\n");
   }
 
   private addImports(): void {
-    const libs =
-      'import { type VM, type List, type IC, Variable, createInnerClass, Predicate, } from "./libs";';
-    const buildIn = 'import { Member, Test } from "./buildIn";';
-    this.output.push(libs, buildIn, "");
+    const imt = [
+      'import { type IC, createInnerClass } from "./util";',
+      'import { Predicate } from "./Predicate";',
+      'import { Variable } from "./Variable";',
+      'import { List } from "./List";',
+      'import { VM } from "./VM";',
+      'import { For } from "./For";',
+      'import { Member } from "./Member";',
+      'import { Test } from "./Test";',
+    ];
+    this.output.push(...imt, "");
   }
 
   private addClasses(): void {
@@ -33,6 +72,86 @@ class CodeGenerator {
     for (const module of classList) {
       this.output.push(...this.codeClass(module), "");
     }
+  }
+
+  private genMain(): void {
+    const fieldList = this.prog.body
+      .filter((cls) => cls.type !== "dummy")
+      .flatMap((c) => c.fieldList.filter((f) => f.type !== "dummy"))
+      .flatMap((p) => p.value);
+    const inputField = fieldList.filter((f) => f.isInput);
+    const clsName = this.prog.body.filter((cls) => cls.type !== "dummy")[0]
+      .name;
+
+    const inputDecl =
+      inputField.length !== 0
+        ? [
+            "input: {",
+            ...inputField.map(
+              (f) => `  _${f.name}: ${this._getTypeMember(f.valueType, true)};`
+            ),
+            "}",
+          ]
+        : [];
+    const decl = ["export const main = (", ...inputDecl, ") => {"];
+    const setup = [
+      "const vm: VM = new VM();",
+      ...fieldList.map(
+        (f) =>
+          `const _${f.name}: ${this._getTypeMember(
+            f.valueType,
+            false
+          )} = new ${this._getTypeMember(f.valueType, false)}(${
+            f.isInput
+              ? `input._${f.name}`
+              : f.valueType.type === "number"
+              ? "0"
+              : f.valueType.type === "string"
+              ? '""'
+              : ""
+          });`
+      ),
+      `const p: Predicate = new ${
+        clsName.charAt(0).toUpperCase() + clsName.slice(1)
+      }(${fieldList.map((f) => `_${f.name}`).join(", ")}, Predicate.success);`,
+    ];
+    const result = [
+      "const result: {",
+      ...fieldList
+        .filter((v) => !v.isInput)
+        .map((f) => `  ${f.name}: ${f.valueType.type};`),
+      "}[] = [];",
+    ];
+    const run = [
+      "for (let s: boolean = vm.call(p); s === true; s = vm.redo()) {",
+      "  result.push({",
+      ...fieldList
+        .filter((v) => !v.isInput)
+        .map(
+          (f) =>
+            `    ${f.name}: _${f.name}.${
+              f.valueType.type === "number"
+                ? "getNumberValue"
+                : f.valueType.type === "string"
+                ? "getStringValue"
+                : "getValue"
+            }(),`
+        ),
+      "})",
+      "}",
+    ];
+
+    this.output.push(
+      ...decl,
+      ...setup,
+      "",
+      ...result,
+      "",
+      ...run,
+      "",
+      "  return result;",
+      "}"
+    );
   }
 
   private codeClass(module: Class): string[] {
@@ -44,7 +163,12 @@ class CodeGenerator {
     const field = [
       ...module.fieldList
         .filter((p) => p.type !== "dummy")
-        .flatMap((p) => p.value.map((v) => `  private ${v.name}: Variable;`)),
+        .flatMap((p) =>
+          p.value.map(
+            (v) =>
+              `  private ${v.name}: ${this._getTypeMember(v.valueType, false)};`
+          )
+        ),
       "  private cont: Predicate;",
       "",
     ];
@@ -53,7 +177,11 @@ class CodeGenerator {
       "  public constructor(",
       ...module.fieldList
         .filter((p) => p.type !== "dummy")
-        .flatMap((p) => p.value.map((v) => `    ${v.name}: Variable,`)),
+        .flatMap((p) =>
+          p.value.map(
+            (v) => `    ${v.name}: ${this._getTypeMember(v.valueType, false)},`
+          )
+        ),
       "    cont: Predicate",
       "  ) {",
       ...module.fieldList
@@ -102,7 +230,13 @@ class CodeGenerator {
       ...block.fieldList
         .filter((p) => p.type !== "dummy")
         .flatMap((p) =>
-          p.value.map((v) => `        private ${v.name}: Variable;`)
+          p.value.map(
+            (v) =>
+              `        private ${v.name}: ${this._getTypeMember(
+                v.valueType,
+                false
+              )} = new ${this._getTypeMember(v.valueType, false)}();`
+          )
         ),
       "",
     ];
@@ -200,6 +334,9 @@ class CodeGenerator {
         const ths = (stmt.lhs as VarNode).isInParam
           ? "outerThis"
           : "methodThis";
+        if (stmt.rhs.type === "if") {
+          return this.buildInGen(stmt.rhs, cont);
+        }
         return [
           `                ${ths}.${
             (stmt.lhs as VarNode).name
@@ -218,7 +355,7 @@ class CodeGenerator {
     switch (buildIn.type) {
       case "for": {
         return [
-          "For(",
+          "new For(",
           buildIn.target ? this.primaryGen(buildIn.target, true) : "",
           ", ",
           ...this.exprGen(buildIn.from, true),
@@ -233,7 +370,7 @@ class CodeGenerator {
       }
       case "select": {
         return [
-          "Member(",
+          "new Member(",
           buildIn.target ? this.primaryGen(buildIn.target, true) : "",
           ", ",
           ...this.exprGen(buildIn.list, true),
@@ -246,6 +383,22 @@ class CodeGenerator {
         return ["Math.sqrt(", ...this.exprGen(buildIn.expr, false), ")"].join(
           ""
         );
+      }
+      case "if": {
+        // outer確定かも
+        const ths = (buildIn.constraint as VarNode).isInParam
+          ? "outerThis"
+          : "methodThis";
+        return [
+          `                if (!(${this.exprGen(buildIn.cond, false)})) {`,
+          `                ${ths}.${
+            (buildIn.constraint as VarNode).name
+          }.setValue(false);`,
+          "                }",
+          `                ${ths}.${
+            (buildIn.constraint as VarNode).name
+          }.setValue(true);`,
+        ].join("\n");
       }
       default:
         return this.exprGen(buildIn, false);
@@ -336,9 +489,16 @@ class CodeGenerator {
         return primary.token.value;
       case "var": {
         const ths = primary.isInParam ? "outerThis" : "methodThis";
+        const type = primary.valueType;
+        let getMethod = "getValue";
+        if (type.type === "number") {
+          getMethod = "getNumberValue";
+        } else if (type.type === "string") {
+          getMethod = "getStringValue";
+        }
         return isVarRef
           ? `${ths}.${primary.name}`
-          : `${ths}.${primary.name}.getValue()`;
+          : `${ths}.${primary.name}.${getMethod}()`;
       }
       default:
         return "";
