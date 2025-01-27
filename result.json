@@ -1,0 +1,2436 @@
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 27, character: 23 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '13.86' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_pin' },
+    isInParam: false,
+    isInput: false,
+    name: '_pin',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 27, character: 31 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_pin',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwTent',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 27, character: 42 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '90895.9' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 28, character: 7 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'neg',
+      lhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwTent',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 28, character: 10 },
+    value: '-'
+  },
+  callee: 'neg',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '66323.2' }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 28, character: 19 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '-' },
+    callee: 'neg',
+    lhs: { type: 'num', token: [Object] }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 28, character: 31 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwW',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 28, character: 36 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 28, character: 44 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwW',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 28, character: 49 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 29, character: 7 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_pin',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 29, character: 10 },
+    value: '-'
+  },
+  callee: 'neg',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0.0000366418' }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 29, character: 24 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '-' },
+    callee: 'neg',
+    lhs: { type: 'num', token: [Object] }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_pin' },
+    isInParam: false,
+    isInput: false,
+    name: '_pin',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 29, character: 31 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'neg',
+      lhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_pin',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_pin' },
+    isInParam: false,
+    isInput: false,
+    name: '_pin',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 29, character: 39 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwTent',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 29, character: 42 },
+    value: '-'
+  },
+  callee: 'neg',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0.384187' }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 29, character: 52 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '-' },
+    callee: 'neg',
+    lhs: { type: 'num', token: [Object] }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_pin' },
+    isInParam: false,
+    isInput: false,
+    name: '_pin',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 29, character: 59 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'neg',
+      lhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_pin',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 30, character: 7 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwTent',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 30, character: 19 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0.220356' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_pin' },
+    isInParam: false,
+    isInput: false,
+    name: '_pin',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 30, character: 26 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_pin',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 30, character: 38 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwW',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 30, character: 49 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '78.8856' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_pin' },
+    isInParam: false,
+    isInput: false,
+    name: '_pin',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 30, character: 56 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_pin',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 31, character: 7 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwW',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 31, character: 18 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '6.98206' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_pin' },
+    isInParam: false,
+    isInput: false,
+    name: '_pin',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 31, character: 25 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_pin',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 31, character: 34 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwTent',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 31, character: 37 },
+    value: '-'
+  },
+  callee: 'neg',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '2751.02' }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 31, character: 46 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '-' },
+    callee: 'neg',
+    lhs: { type: 'num', token: [Object] }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 31, character: 56 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'neg',
+      lhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwTent',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 32, character: 7 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwTent',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 32, character: 18 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '2906.12' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 32, character: 28 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwTent',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 32, character: 40 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwW',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 32, character: 45 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 32, character: 55 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwTent',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 33, character: 7 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwW',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 33, character: 12 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 33, character: 22 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwTent',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 33, character: 31 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwTent',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 33, character: 34 },
+    value: '-'
+  },
+  callee: 'neg',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '1051.24' }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 33, character: 43 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '-' },
+    callee: 'neg',
+    lhs: { type: 'num', token: [Object] }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 33, character: 54 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'neg',
+      lhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwTent',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 34, character: 7 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwW',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 34, character: 12 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 34, character: 23 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwTent',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 34, character: 31 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwW',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 34, character: 36 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwTent',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 34, character: 47 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwTent',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 34, character: 55 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwW',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 34, character: 60 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 34, character: 67 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwW',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 35, character: 7 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwW',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 35, character: 12 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 35, character: 19 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwW',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 35, character: 28 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwW',
+      valueType: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 35, character: 33 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 35, character: 41 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwW',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 35, character: 50 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '+' },
+    callee: 'add',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'add',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  },
+  rhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0' }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 38, character: 30 },
+    value: '-'
+  },
+  callee: 'sub',
+  lhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwTent',
+    valueType: { type: 'number', token: [Object] }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '/' },
+    callee: 'div',
+    lhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_q',
+      valueType: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 38, character: 35 },
+    value: '/'
+  },
+  callee: 'div',
+  lhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_q' },
+    isInParam: false,
+    isInput: false,
+    name: '_q',
+    valueType: { type: 'number', token: [Object] }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'pow',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 38, character: 44 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '4.186' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 38, character: 51 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cwW',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '^' },
+    callee: 'pow',
+    lhs: { type: 'num', token: [Object] },
+    rhs: { type: 'num', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 38, character: 56 },
+    value: '^'
+  },
+  callee: 'pow',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '10' }
+  },
+  rhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '6' }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 41, character: 48 },
+    value: '>'
+  },
+  callee: 'LT',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwTexit' },
+    isInParam: true,
+    isInput: false,
+    name: '_cwTexit',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 41, character: 52 },
+    value: 'and'
+  },
+  callee: 'and',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '>' },
+    callee: 'LT',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: true,
+      isInput: false,
+      name: '_cwTexit',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '<' },
+    callee: 'LT',
+    lhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: true,
+      isInput: false,
+      name: '_cwTexit',
+      valueType: [Object]
+    },
+    rhs: { type: 'num', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 41, character: 65 },
+    value: '<'
+  },
+  callee: 'LT',
+  lhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cwTexit' },
+    isInParam: true,
+    isInput: false,
+    name: '_cwTexit',
+    valueType: { type: 'number', token: [Object] }
+  },
+  rhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '100' }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 36, character: 21 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_pin' },
+    isInParam: false,
+    isInput: false,
+    name: '_pin',
+    valueType: { type: 'number', token: [Object] }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_aUXPin' },
+    isInParam: false,
+    isInput: false,
+    name: '_aUXPin',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 39, character: 21 },
+    value: '/'
+  },
+  callee: 'div',
+  lhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_q' },
+    isInParam: false,
+    isInput: false,
+    name: '_q',
+    valueType: { type: 'number', token: [Object] }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_p' },
+    isInParam: false,
+    isInput: false,
+    name: '_p',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 42, character: 40 },
+    value: '>'
+  },
+  callee: 'LT',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '5' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cOP' },
+    isInParam: true,
+    isInput: false,
+    name: '_cOP',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 37, character: 21 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_q' },
+    isInParam: false,
+    isInput: false,
+    name: '_q',
+    valueType: { type: 'number', token: [Object] }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_p' },
+    isInParam: false,
+    isInput: false,
+    name: '_p',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 40, character: 32 },
+    value: '+'
+  },
+  callee: 'add',
+  lhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwTent' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwTent',
+    valueType: { type: 'number', token: [Object] }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '/' },
+    callee: 'div',
+    lhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_rad',
+      valueType: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 40, character: 39 },
+    value: '/'
+  },
+  callee: 'div',
+  lhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_rad' },
+    isInParam: false,
+    isInput: false,
+    name: '_rad',
+    valueType: { type: 'number', token: [Object] }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'mul',
+      lhs: [Object],
+      rhs: [Object]
+    },
+    rhs: {
+      type: 'call-expr',
+      token: [Object],
+      callee: 'pow',
+      lhs: [Object],
+      rhs: [Object]
+    }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 40, character: 48 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '4.186' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwW' },
+    isInParam: false,
+    isInput: false,
+    name: '_cdwW',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 40, character: 56 },
+    value: '*'
+  },
+  callee: 'mul',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '*' },
+    callee: 'mul',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: false,
+      isInput: false,
+      name: '_cdwW',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '^' },
+    callee: 'pow',
+    lhs: { type: 'num', token: [Object] },
+    rhs: { type: 'num', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 40, character: 61 },
+    value: '^'
+  },
+  callee: 'pow',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '10' }
+  },
+  rhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '6' }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 43, character: 50 },
+    value: '>'
+  },
+  callee: 'LT',
+  lhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '0' }
+  },
+  rhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwTexit' },
+    isInParam: true,
+    isInput: false,
+    name: '_cdwTexit',
+    valueType: { type: 'number', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 43, character: 54 },
+    value: 'and'
+  },
+  callee: 'and',
+  lhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '>' },
+    callee: 'LT',
+    lhs: { type: 'num', token: [Object] },
+    rhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: true,
+      isInput: false,
+      name: '_cdwTexit',
+      valueType: [Object]
+    }
+  },
+  rhs: {
+    type: 'call-expr',
+    token: { type: 'reserved', position: [Object], value: '<' },
+    callee: 'LT',
+    lhs: {
+      type: 'var',
+      token: [Object],
+      isInParam: true,
+      isInput: false,
+      name: '_cdwTexit',
+      valueType: [Object]
+    },
+    rhs: { type: 'num', token: [Object] }
+  }
+}
+{
+  type: 'call-expr',
+  token: {
+    type: 'reserved',
+    position: { line: 43, character: 68 },
+    value: '<'
+  },
+  callee: 'LT',
+  lhs: {
+    type: 'var',
+    token: { type: 'ident-var', position: [Object], value: '_cdwTexit' },
+    isInParam: true,
+    isInput: false,
+    name: '_cdwTexit',
+    valueType: { type: 'number', token: [Object] }
+  },
+  rhs: {
+    type: 'num',
+    token: { type: 'number', position: [Object], value: '100' }
+  }
+}

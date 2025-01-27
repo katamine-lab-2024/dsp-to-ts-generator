@@ -5,7 +5,6 @@ import { List } from "./List";
 import { VM } from "./VM";
 import { For } from "./For";
 import { Member } from "./Member";
-import { Test } from "./Test";
 
 export class TRn implements Predicate {
   private _aUXPinList: List<number>;
@@ -147,68 +146,67 @@ export class TRn implements Predicate {
             class implements Predicate {
               public exec(vm: VM) {
                 methodThis._q.setValue(
-                  13.86 * methodThis._pin.getNumberValue() +
-                    90895.9 * methodThis._cwTent.getNumberValue() +
-                    -66323.2 * methodThis._cdwTent.getNumberValue() +
-                    0 * methodThis._cwW.getNumberValue() +
-                    0 * methodThis._cdwW.getNumberValue() +
+                  13.86 * methodThis._pin.getValue() +
+                    90895.9 * methodThis._cwTent.getValue() +
+                    -66323.2 * methodThis._cdwTent.getValue() +
+                    0 * methodThis._cwW.getValue() +
+                    0 * methodThis._cdwW.getValue() +
                     -0.0000366418 *
-                      methodThis._pin.getNumberValue() *
-                      methodThis._pin.getNumberValue() +
+                      methodThis._pin.getValue() *
+                      methodThis._pin.getValue() +
                     -0.384187 *
-                      methodThis._pin.getNumberValue() *
-                      methodThis._cwTent.getNumberValue() +
+                      methodThis._pin.getValue() *
+                      methodThis._cwTent.getValue() +
                     0.220356 *
-                      methodThis._pin.getNumberValue() *
-                      methodThis._cdwTent.getNumberValue() +
+                      methodThis._pin.getValue() *
+                      methodThis._cdwTent.getValue() +
                     78.8856 *
-                      methodThis._pin.getNumberValue() *
-                      methodThis._cwW.getNumberValue() +
+                      methodThis._pin.getValue() *
+                      methodThis._cwW.getValue() +
                     6.98206 *
-                      methodThis._pin.getNumberValue() *
-                      methodThis._cdwW.getNumberValue() +
+                      methodThis._pin.getValue() *
+                      methodThis._cdwW.getValue() +
                     -2751.02 *
-                      methodThis._cwTent.getNumberValue() *
-                      methodThis._cwTent.getNumberValue() +
+                      methodThis._cwTent.getValue() *
+                      methodThis._cwTent.getValue() +
                     2906.12 *
-                      methodThis._cwTent.getNumberValue() *
-                      methodThis._cdwTent.getNumberValue() +
+                      methodThis._cwTent.getValue() *
+                      methodThis._cdwTent.getValue() +
                     0 *
-                      methodThis._cwTent.getNumberValue() *
-                      methodThis._cwW.getNumberValue() +
+                      methodThis._cwTent.getValue() *
+                      methodThis._cwW.getValue() +
                     0 *
-                      methodThis._cwTent.getNumberValue() *
-                      methodThis._cdwW.getNumberValue() +
+                      methodThis._cwTent.getValue() *
+                      methodThis._cdwW.getValue() +
                     -1051.24 *
-                      methodThis._cdwTent.getNumberValue() *
-                      methodThis._cdwTent.getNumberValue() +
+                      methodThis._cdwTent.getValue() *
+                      methodThis._cdwTent.getValue() +
                     0 *
-                      methodThis._cdwTent.getNumberValue() *
-                      methodThis._cwW.getNumberValue() +
+                      methodThis._cdwTent.getValue() *
+                      methodThis._cwW.getValue() +
                     0 *
-                      methodThis._cdwTent.getNumberValue() *
-                      methodThis._cdwW.getNumberValue() +
+                      methodThis._cdwTent.getValue() *
+                      methodThis._cdwW.getValue() +
                     0 *
-                      methodThis._cwW.getNumberValue() *
-                      methodThis._cwW.getNumberValue() +
+                      methodThis._cwW.getValue() *
+                      methodThis._cwW.getValue() +
                     0 *
-                      methodThis._cwW.getNumberValue() *
-                      methodThis._cdwW.getNumberValue() +
+                      methodThis._cwW.getValue() *
+                      methodThis._cdwW.getValue() +
                     0 *
-                      methodThis._cdwW.getNumberValue() *
-                      methodThis._cdwW.getNumberValue() +
+                      methodThis._cdwW.getValue() *
+                      methodThis._cdwW.getValue() +
                     0
                 );
                 outerThis._cwTexit.setValue(
-                  methodThis._cwTent.getNumberValue() -
-                    (methodThis._q.getNumberValue() / 4.186) *
-                      methodThis._cwW.getNumberValue() *
-                      10 ** 6
+                  methodThis._cwTent.getValue() -
+                    methodThis._q.getValue() /
+                      (4.186 * methodThis._cwW.getValue() * 10 ** 6)
                 );
                 if (
                   !(
-                    0 < outerThis._cwTexit.getNumberValue() &&
-                    outerThis._cwTexit.getNumberValue() < 100
+                    0 < outerThis._cwTexit.getValue() &&
+                    outerThis._cwTexit.getValue() < 100
                   )
                 ) {
                   outerThis._constraint_cwTexit.setValue(false);
@@ -237,14 +235,12 @@ export class TRn implements Predicate {
             class implements Predicate {
               public exec(vm: VM) {
                 methodThis._p.setValue(
-                  methodThis._pin.getNumberValue() +
-                    methodThis._aUXPin.getNumberValue()
+                  methodThis._pin.getValue() + methodThis._aUXPin.getValue()
                 );
                 outerThis._cOP.setValue(
-                  methodThis._q.getNumberValue() /
-                    methodThis._p.getNumberValue()
+                  methodThis._q.getValue() / methodThis._p.getValue()
                 );
-                if (!(5 < outerThis._cOP.getNumberValue())) {
+                if (!(5 < outerThis._cOP.getValue())) {
                   outerThis._constraint_cOP.setValue(false);
                 }
                 outerThis._constraint_cOP.setValue(true);
@@ -258,19 +254,17 @@ export class TRn implements Predicate {
             class implements Predicate {
               public exec(vm: VM) {
                 methodThis._rad.setValue(
-                  methodThis._q.getNumberValue() +
-                    methodThis._p.getNumberValue()
+                  methodThis._q.getValue() + methodThis._p.getValue()
                 );
                 outerThis._cdwTexit.setValue(
-                  methodThis._cdwTent.getNumberValue() +
-                    (methodThis._rad.getNumberValue() / 4.186) *
-                      methodThis._cdwW.getNumberValue() *
-                      10 ** 6
+                  methodThis._cdwTent.getValue() +
+                    methodThis._rad.getValue() /
+                      (4.186 * methodThis._cdwW.getValue() * 10 ** 6)
                 );
                 if (
                   !(
-                    0 < outerThis._cdwTexit.getNumberValue() &&
-                    outerThis._cdwTexit.getNumberValue() < 100
+                    0 < outerThis._cdwTexit.getValue() &&
+                    outerThis._cdwTexit.getValue() < 100
                   )
                 ) {
                   outerThis._constraint_cdwTexit.setValue(false);
@@ -359,9 +353,9 @@ export const main = (input: {
 
   for (let s: boolean = vm.call(p); s === true; s = vm.redo()) {
     result.push({
-      _cwTexit: __cwTexit.getNumberValue(),
-      _cOP: __cOP.getNumberValue(),
-      _cdwTexit: __cdwTexit.getNumberValue(),
+      _cwTexit: __cwTexit.getValue(),
+      _cOP: __cOP.getValue(),
+      _cdwTexit: __cdwTexit.getValue(),
       _constraint_cwTexit: __constraint_cwTexit.getValue(),
       _constraint_cOP: __constraint_cOP.getValue(),
       _constraint_cdwTexit: __constraint_cdwTexit.getValue(),

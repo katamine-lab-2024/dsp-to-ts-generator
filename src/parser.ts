@@ -943,7 +943,7 @@ class Parser {
    * @returns {Expr} 乗算式
    */
   parseMul(): Expr {
-    let node = this.parseUnary();
+    let node = this.parsePow();
     let token: Token;
     for (;;) {
       if (this.isCurrent("*")) {
@@ -953,7 +953,7 @@ class Parser {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.MUL,
           lhs: node,
-          rhs: this.parseUnary(),
+          rhs: this.parsePow(),
           token: token,
         };
       } else if (this.isCurrent("/")) {
@@ -963,7 +963,7 @@ class Parser {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.DIV,
           lhs: node,
-          rhs: this.parseUnary(),
+          rhs: this.parsePow(),
           token: token,
         };
       } else if (this.isCurrent("mod")) {
@@ -973,23 +973,34 @@ class Parser {
           type: NODE_TYPE.CALL_EXPR,
           callee: OP_TYPE.MOD,
           lhs: node,
-          rhs: this.parseUnary(),
-          token: token,
-        };
-      } else if (this.isCurrent("^")) {
-        token = this.peek();
-        this.next();
-        node = {
-          type: NODE_TYPE.CALL_EXPR,
-          callee: OP_TYPE.POW,
-          lhs: node,
-          rhs: this.parseUnary(),
+          rhs: this.parsePow(),
           token: token,
         };
       } else {
         return node;
       }
     }
+  }
+
+  /**
+   * `pow = unary ("^" pow)?`
+   * べき乗は右結合のため、再帰的にパースする
+   * @returns {Expr} べき乗演算
+   */
+  parsePow(): Expr {
+    let node = this.parseUnary();
+    if (this.isCurrent("^")) {
+      const token = this.peek();
+      this.next();
+      node = {
+        type: NODE_TYPE.CALL_EXPR,
+        callee: OP_TYPE.POW,
+        lhs: node,
+        rhs: this.parsePow(), // 右結合にするための再帰呼び出し
+        token: token,
+      };
+    }
+    return node;
   }
 
   /**
