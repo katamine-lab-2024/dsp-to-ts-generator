@@ -1,7 +1,7 @@
 tRn (
   {
     _aUXPinList: [r],
-    _ModelList: [r],
+    _ModelList: [a],
     _pinList: [r],
     _cwTentList: [r],
     _cdwTentList: [r],
@@ -19,7 +19,7 @@ tRn (
   method
     _pin: real = select(_pinList);
     _aUXPin: real = select(_aUXPinList);
-    _Model: real = select(_ModelList);
+    _Model: atom = select(_ModelList);
     _cwTent: real = select(_cwTentList);
     _cdwTent: real = select(_cdwTentList);
     _cdwW: real = select(_cdwWList);
@@ -38,8 +38,8 @@ tRn (
     _cwTexit: real = _cwTent - _q / (4.186 * _cwW * 10 ^ 6);
     _cOP: real = _q / _p;
     _cdwTexit: real = _cdwTent + _rad / (4.186 * _cdwW * 10 ^ 6);
-    _constraint_cwTexit: bool = test( _cwTexit > 0 and _cwTexit < 100);
-    _constraint_cOP: bool = test( _cOP > 5);
-    _constraint_cdwTexit: bool = test( _cdwTexit > 0 and _cdwTexit < 100 );
+    _constraint_cwTexit: bool = _cwTexit > 0 and _cwTexit < 100;
+    _constraint_cOP: bool = _cOP > 5;
+    _constraint_cdwTexit: bool = _cdwTexit > 0 and _cdwTexit < 100;
   end method;
 end module;

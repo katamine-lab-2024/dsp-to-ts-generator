@@ -1,0 +1,45 @@
+ct (
+  {
+    _cdwTentList: [r],
+    _ENV_OADBList: [r],
+    _GspecList: [r],
+    _PinList: [r],
+    _PspecList: [r],
+    _OARHexitList: [r],
+    _OARHentList: [r],
+    _cdwWList: [r],
+    _RadspecList: [r]
+  },
+  {
+    _apT: r,
+    _LF: r
+  })
+  method
+    _cdwTent: real = select(_cdwTentList);
+    _ENV_OADB: real = select(_ENV_OADBList);
+    _Gspec: real = select(_GspecList);
+    _Pin: real = select(_PinList);
+    _Pspec: real = select(_PspecList);
+    _OARHexit: real = select(_OARHexitList);
+    _OARHent: real = select(_OARHentList);
+    _cdwW: real = select(_cdwWList);
+    _Radspec: real = select(_RadspecList);
+    _飽和水蒸気圧h2: real = exp(6.18145 * 10 ^ -12 * _cdwTent ^ 5 - 3.42981 * 10 ^ -9 * _cdwTent ^ 4 + 1.11342 * 10 ^ - 6 * _cdwTent ^ 3 - 2.98633 * 10 ^ -4 * _cdwTent ^ 2 + 7.26543 * 10 ^ -2 * _cdwTent - 5.11134 ) * 760 * 133.32;
+    _飽和水蒸気圧h1: real = exp(6.18145 * 10 ^ -12 * _ENV_OADB ^ 5 - 3.42981 * 10 ^ -9 * _ENV_OADB ^ 4 + 1.11342 * 10 ^ -6 * _ENV_OADB ^ 3 - 2.98633 * 10 ^ -4 * _ENV_OADB ^ 2 + 7.26543 * 10 ^ -2 * _ENV_OADB - 5.11134) * 760 * 133.32;
+    _idealG: real = _Gspec * ( _Pin / _Pspec ) ^ ( 1/3 );
+    _水蒸気分圧h2: real = _OARHexit * _飽和水蒸気圧h2 / 100;
+    _水蒸気分圧: real = _OARHent * _飽和水蒸気圧h1 / 100;
+    _OAAHexit: real = 0.622 * _水蒸気分圧h2 / (101325 - _水蒸気分圧h2);
+    _OAAHent: real = 0.622 * _水蒸気分圧 / (101325 - _水蒸気分圧);
+    _ENexit: real = 1.006 * _cdwTent + (1.805 * _cdwTent + 2501) * _OAAHexit;
+    _ENin: real = 1.006 * _ENV_OADB + (1.805 * _ENV_OADB + 2501) * _OAAHexit;
+    _heatH: real = 6.08 * 10 ^ -6 * _Pin + -0.0134371 * _cdwTent + 27.1227 * _cdwW + -0.171 * _OAAHexit + -4.01 * 10 ^ -10 * _Pin * _Pin + 5.17 * 10 ^ -7 * _Pin * _cdwTent + -9.41 * 10 ^ -5 * _Pin * _cdwW + -0.000989227 * _Pin * _OAAHexit + 0.000252793 * _cdwTent * _cdwTent + -0.6535 * _cdwTent * _cdwW + 1.34834 * _cdwTent * _OAAHexit + -46.4248 * _cdwW * _cdwW + 610.065 * _cdwW * _OAAHexit + -2364.73 * _OAAHexit * _OAAHexit + 0.217912;
+    _idealRad: real = (_ENexit - _ENin) * _idealG * 1.161 * 1000;
+    _ENV_OAWB: real = (2.15048e-010 * _ENin ^ 5 - 1.31767e-007 * _ENin ^ 4 + 3.52421e-005 * _ENin ^ 3 - 0.00565988 * _ENin ^ 2 + 0.691948 * _ENin - 6.0524) / (1 + _OAAHexit * (3.60379e-009 * _ENin ^ 4 - 1.95259e-006 * _ENin ^ 3 + 0.000418588 * _ENin  ^ 2 - 0.0465277 * _ENin + 2.88767));
+    _Rade: real = _idealRad * _heatH;
+    _cdwTexit: real = _cdwTent - _Rade / (4.186 * _cdwW * 10 ^ 6);
+    _constraint_cdwTexit: bool = _cdwTexit > 0 and _cdwTexit < 100;
+    _apT: real = _cdwTexit - _ENV_OAWB;
+    _LF: real = _Rade / _Radspec;
+  end method;
+end module;

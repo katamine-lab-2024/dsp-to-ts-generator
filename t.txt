@@ -1,0 +1,125 @@
+冷却塔_畑田 module(
+	CTi_cdwTent, ENV_OADB, CTi_Gspec, CTi_Pin, CTi_Pspec, CT_OARHexit, CT_OARHent, CTi_cdwW, CTi_Radspec
+	CTi_apT,CTi_LF
+	):-
+	飽和水蒸気圧 h2module(CTi_cdwTent,_飽和水蒸気圧 h2),
+	飽和水蒸気圧 h1module(ENV_OADB,_飽和水蒸気圧 h1),
+	理想風量 module(CTi_Gspec,CTi_Pin,CTi_Pspec,CTi_idealG),
+	水蒸気分圧 h2module(CT_OARHexit,_飽和水蒸気圧 h2,_水蒸気分圧 h2),
+	水蒸気分圧 module(CT_OARHent,_飽和水蒸気圧 h1,_水蒸気分圧),
+	外気出口絶対湿度 module(_水蒸気分圧 h2,CT_OAAHexit),
+	外気入口絶対湿度 module(_水蒸気分圧,CT_OAAHent),
+	空気出口エンタルピ module(CT_OAAHexit,CTi_cdwTent,CT_ENexit),
+	空気入口エンタルピ module(CT_OAAHent,ENV_OADB,CT_ENin),
+	熱交換効率 module(CT_OAAHent,CTi_Pin,CTi_cdwTent,CTi_cdwW,CTi_heatH),
+	理想放熱量 module(CT_ENexit,CT_ENin,CTi_idealG,CTi_idealRad),
+	環境外気湿球温度 module(CT_ENin,CT_OAAHent,ENV_OAWB),
+	有効放熱量 module(CTi_heatH,CTi_idealRad,CTi_Rade),
+	冷却塔冷却水出口温度 module(CTi_Rade,CTi_cdwTent,CTi_cdwW,CTi_cdwTexit,Constraint_CTi_cdwTexit),
+	CTi_apT is
+		CTi_cdwTexit - ENV_OAWB,
+	CTi_LF is
+		CTi_Rade / CTi_Radspec.
+
+飽和水蒸気圧 h2module(
+	CTi_cdwTent,
+	_飽和水蒸気圧 h2
+	) :-
+	_飽和水蒸気圧 h2 is
+		exp(6.18145 * 10 ^ -12 * CTi_cdwTent ^ 5 - 3.42981 * 10 ^ -9 * CTi_cdwTent ^ 4 + 1.11342 * 10 ^ - 6 * CTi_cdwTent ^ 3 - 2.98633 * 10 ^ -4 * CTi_cdwTent ^ 2 + 7.26543 * 10 ^ -2 * CTi_cdwTent - 5.11134 ) * 760 * 133.32.
+
+飽和水蒸気圧 h1module(
+	ENV_OADB,
+	_飽和水蒸気圧 h1
+	) :-
+	_飽和水蒸気圧 h1 is
+		exp(6.18145 * 10 ^ -12 * ENV_OADB ^ 5 - 3.42981 * 10 ^ -9 * ENV_OADB ^ 4 + 1.11342 * 10 ^ -6 * ENV_OADB ^ 3 - 2.98633 * 10 ^ -4 * ENV_OADB ^ 2 + 7.26543 * 10 ^ -2 * ENV_OADB - 5.11134) * 760 * 133.32.
+
+理想風量 module(
+	CTi_Gspec,CTi_Pin,CTi_Pspec,
+	CTi_idealG
+	) :-
+	CTi_idealG is
+		CTi_Gspec * ( CTi_Pin / CTi_Pspec ) ^ ( 1/3 ).
+
+水蒸気分圧 h2module(
+	CT_OARHexit,_飽和水蒸気圧h2,
+	_水蒸気分圧h2
+	) :-
+	_水蒸気分圧 h2 is
+		CT_OARHexit * _飽和水蒸気圧h2 / 100.
+
+水蒸気分圧 module(
+	CT_OARHent,_飽和水蒸気圧h1,
+	_水蒸気分圧
+	) :-
+	_水蒸気分圧 is
+		CT_OARHent * _飽和水蒸気圧h1 / 100.
+
+外気出口絶対湿度 module(
+	_水蒸気分圧 h2,
+	CT_OAAHexit
+	) :-
+	CT_OAAHexit is
+		0.622 * _水蒸気分圧 h2 / (101325 - _水蒸気分圧 h2).
+
+外気入口絶対湿度 module(
+	_水蒸気分圧,
+	CT_OAAHent
+	) :-
+	CT_OAAHent is
+		0.622 * _水蒸気分圧 / (101325 - _水蒸気分圧).
+
+空気出口エンタルピ module(
+	CT_OAAHexit,CTi_cdwTent,
+	CT_ENexit
+	) :-
+	CT_ENexit is
+		1.006 * CTi_cdwTent + (1.805 * CTi_cdwTent + 2501) * CT_OAAHexit.
+
+空気入口エンタルピ module(
+	CT_OAAHent,ENV_OADB,
+	CT_ENin
+	) :-
+	CT_ENin is
+		1.006 * ENV_OADB + (1.805 * ENV_OADB + 2501) * CT_OAAHent.
+
+熱交換効率 module(
+	CT_OAAHent,CTi_Pin,CTi_cdwTent,CTi_cdwW,
+	CTi_heatH
+	) :-
+	CTi_heatH is
+		6.08*10 ^ -6 * CTi_Pin + -0.0134371 * CTi_cdwTent + 27.1227 * CTi_cdwW + -0.171 * CT_OAAHent + -4.01 * 10 ^ -10 * CTi_Pin * CTi_Pin + 5.17 * 10 ^ -7 * CTi_Pin * CTi_cdwTent + -9.41 * 10 ^ -5 * CTi_Pin * CTi_cdwW + -0.000989227 * CTi_Pin * CT_OAAHent + 0.000252793*CTi_cdwTent * CTi_cdwTent + -0.6535 * CTi_cdwTent * CTi_cdwW + 1.34834 * CTi_cdwTent * CT_OAAHent + -46.4248 * CTi_cdwW * CTi_cdwW + 610.065 * CTi_cdwW * CT_OAAHent + -2364.73 * CT_OAAHent * CT_OAAHent + 0.217912.
+
+理想放熱量 module(
+	CT_ENexit,CT_ENin,CTi_idealG,
+	CTi_idealRad
+	) :-
+	CTi_idealRad is
+		(CT_ENexit - CT_ENin) * CTi_idealG * 1.161 * 1000.
+
+環境外気湿球温度 module(
+	CT_ENin,CT_OAAHent,
+	ENV_OAWB
+	) :-
+	ENV_OAWB is
+		(2.15048e-010 * CT_ENin ^ 5 - 1.31767e-007 * CT_ENin ^ 4 + 3.52421e-005 * CT_ENin ^ 3 - 0.00565988 * CT_ENin ^ 2 + 0.691948 * CT_Enin - 6.0524) / (1 + CT_OAAHent * (3.60379e-009 * CT_ENin ^ 4 - 1.95259e-006 * CT_ENin ^ 3 + 0.000418588 * CT_ENin ^ 2 - 0.0465277 * CT_ENin + 2.88767)).
+
+有効放熱量 module(
+	CTi_heatH,CTi_idealRad,
+	CTi_Rade
+	) :-
+	CTi_Rade is
+		CTi_idealRad * CTi_heatH.
+
+冷却塔冷却水出口温度 module(
+	CTi_Rade, CTi_cdwTent, CTi_cdwW,
+	CTi_cdwTexit,Constraint_CTi_cdwTexit
+	) :-
+	CTi_cdwTexit is
+		CTi_cdwTent-CTi_Rade / (4.186 * CTi_cdwW * 10 ^ 6),
+	(CTi_cdwTexit > 0, CTi_cdwTexit < 100 ->
+		Constraint_CTi_cdwTexit = true
+		;
+		Constraint_CTi_cdwTexit = false
+	).
