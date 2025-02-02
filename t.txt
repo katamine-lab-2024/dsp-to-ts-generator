@@ -117,7 +117,7 @@
 	CTi_cdwTexit,Constraint_CTi_cdwTexit
 	) :-
 	CTi_cdwTexit is
-		CTi_cdwTent-CTi_Rade / (4.186 * CTi_cdwW * 10 ^ 6),
+		CTi_cdwTent - CTi_Rade / (4.186 * CTi_cdwW * 10 ^ 6),
 	(CTi_cdwTexit > 0, CTi_cdwTexit < 100 ->
 		Constraint_CTi_cdwTexit = true
 		;

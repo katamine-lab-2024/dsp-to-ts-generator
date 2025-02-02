@@ -1,0 +1,631 @@
+{
+  type: 'program',
+  body: [
+    {
+      type: 'class',
+      token: {
+        type: 'reserved',
+        position: { line: 1, character: 1 },
+        value: 'for'
+      },
+      name: 'for',
+      fieldList: [
+        {
+          type: 'param',
+          token: {
+            type: 'reserved',
+            position: { line: 1, character: 5 },
+            value: '{'
+          },
+          value: [
+            {
+              type: 'var',
+              token: {
+                type: 'ident-var',
+                position: { line: 1, character: 6 },
+                value: 'B'
+              },
+              isInParam: false,
+              isInput: true,
+              name: 'B',
+              valueType: {
+                type: 'number',
+                token: {
+                  type: 'reserved',
+                  position: { line: 1, character: 9 },
+                  value: 'real'
+                }
+              }
+            },
+            {
+              type: 'var',
+              token: {
+                type: 'ident-var',
+                position: { line: 1, character: 15 },
+                value: 'E'
+              },
+              isInParam: false,
+              isInput: true,
+              name: 'E',
+              valueType: {
+                type: 'number',
+                token: {
+                  type: 'reserved',
+                  position: { line: 1, character: 18 },
+                  value: 'real'
+                }
+              }
+            },
+            {
+              type: 'var',
+              token: {
+                type: 'ident-var',
+                position: { line: 1, character: 24 },
+                value: 'S'
+              },
+              isInParam: false,
+              isInput: true,
+              name: 'S',
+              valueType: {
+                type: 'number',
+                token: {
+                  type: 'reserved',
+                  position: { line: 1, character: 27 },
+                  value: 'real'
+                }
+              }
+            }
+          ]
+        },
+        {
+          type: 'param',
+          token: {
+            type: 'reserved',
+            position: { line: 1, character: 34 },
+            value: '{'
+          },
+          value: [
+            {
+              type: 'var',
+              token: {
+                type: 'ident-var',
+                position: { line: 1, character: 35 },
+                value: 'N'
+              },
+              isInParam: false,
+              isInput: false,
+              name: 'N',
+              valueType: {
+                type: 'number',
+                token: {
+                  type: 'reserved',
+                  position: { line: 1, character: 38 },
+                  value: 'real'
+                }
+              }
+            }
+          ]
+        }
+      ],
+      body: [
+        {
+          type: 'class',
+          token: {
+            type: 'reserved',
+            position: { line: 2, character: 2 },
+            value: 'method'
+          },
+          name: '1',
+          fieldList: [],
+          body: [
+            {
+              type: 'class',
+              token: {
+                type: 'reserved',
+                position: { line: 3, character: 3 },
+                value: 'when'
+              },
+              name: '1',
+              fieldList: [],
+              body: [
+                {
+                  type: 'method',
+                  token: {
+                    type: 'reserved',
+                    position: { line: 3, character: 3 },
+                    value: 'when'
+                  },
+                  body: [
+                    {
+                      type: 'if',
+                      token: {
+                        type: 'reserved',
+                        position: { line: 3, character: 3 },
+                        value: 'when'
+                      },
+                      cond: {
+                        type: 'call-expr',
+                        token: {
+                          type: 'reserved',
+                          position: { line: 3, character: 10 },
+                          value: '=<'
+                        },
+                        callee: 'LE',
+                        lhs: {
+                          type: 'var',
+                          token: {
+                            type: 'ident-var',
+                            position: { line: 3, character: 8 },
+                            value: 'B'
+                          },
+                          isInParam: true,
+                          isInput: false,
+                          name: 'B',
+                          valueType: {
+                            type: 'number',
+                            token: {
+                              type: 'reserved',
+                              position: { line: 1, character: 9 },
+                              value: 'real'
+                            }
+                          }
+                        },
+                        rhs: {
+                          type: 'var',
+                          token: {
+                            type: 'ident-var',
+                            position: { line: 3, character: 13 },
+                            value: 'E'
+                          },
+                          isInParam: true,
+                          isInput: false,
+                          name: 'E',
+                          valueType: {
+                            type: 'number',
+                            token: {
+                              type: 'reserved',
+                              position: { line: 1, character: 18 },
+                              value: 'real'
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          when: {
+            type: 'call-expr',
+            token: {
+              type: 'reserved',
+              position: { line: 3, character: 10 },
+              value: '=<'
+            },
+            callee: 'LE',
+            lhs: {
+              type: 'var',
+              token: {
+                type: 'ident-var',
+                position: { line: 3, character: 8 },
+                value: 'B'
+              },
+              isInParam: true,
+              isInput: false,
+              name: 'B',
+              valueType: {
+                type: 'number',
+                token: {
+                  type: 'reserved',
+                  position: { line: 1, character: 9 },
+                  value: 'real'
+                }
+              }
+            },
+            rhs: {
+              type: 'var',
+              token: {
+                type: 'ident-var',
+                position: { line: 3, character: 13 },
+                value: 'E'
+              },
+              isInParam: true,
+              isInput: false,
+              name: 'E',
+              valueType: {
+                type: 'number',
+                token: {
+                  type: 'reserved',
+                  position: { line: 1, character: 18 },
+                  value: 'real'
+                }
+              }
+            }
+          }
+        },
+        {
+          type: 'class',
+          token: {
+            type: 'reserved',
+            position: { line: 6, character: 2 },
+            value: 'method'
+          },
+          name: '2',
+          fieldList: [
+            {
+              type: 'param',
+              token: {
+                type: 'ident-var',
+                position: { line: 8, character: 3 },
+                value: 'B1'
+              },
+              value: [
+                {
+                  type: 'var',
+                  token: {
+                    type: 'ident-var',
+                    position: { line: 8, character: 3 },
+                    value: 'B1'
+                  },
+                  isInParam: false,
+                  isInput: false,
+                  name: 'B1',
+                  valueType: {
+                    type: 'number',
+                    token: {
+                      type: 'reserved',
+                      position: { line: 8, character: 7 },
+                      value: 'real'
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          body: [
+            {
+              type: 'class',
+              token: {
+                type: 'reserved',
+                position: { line: 7, character: 3 },
+                value: 'when'
+              },
+              name: '1',
+              fieldList: [],
+              body: [
+                {
+                  type: 'method',
+                  token: {
+                    type: 'reserved',
+                    position: { line: 7, character: 3 },
+                    value: 'when'
+                  },
+                  body: [
+                    {
+                      type: 'if',
+                      token: {
+                        type: 'reserved',
+                        position: { line: 7, character: 3 },
+                        value: 'when'
+                      },
+                      cond: {
+                        type: 'call-expr',
+                        token: {
+                          type: 'reserved',
+                          position: { line: 7, character: 12 },
+                          value: '=<'
+                        },
+                        callee: 'LE',
+                        lhs: {
+                          type: 'call-expr',
+                          token: {
+                            type: 'reserved',
+                            position: { line: 7, character: 9 },
+                            value: '+'
+                          },
+                          callee: 'add',
+                          lhs: {
+                            type: 'var',
+                            token: {
+                              type: 'ident-var',
+                              position: { line: 7, character: 8 },
+                              value: 'B'
+                            },
+                            isInParam: true,
+                            isInput: false,
+                            name: 'B',
+                            valueType: {
+                              type: 'number',
+                              token: {
+                                type: 'reserved',
+                                position: { line: 1, character: 9 },
+                                value: 'real'
+                              }
+                            }
+                          },
+                          rhs: {
+                            type: 'var',
+                            token: {
+                              type: 'ident-var',
+                              position: { line: 7, character: 10 },
+                              value: 'S'
+                            },
+                            isInParam: true,
+                            isInput: false,
+                            name: 'S',
+                            valueType: {
+                              type: 'number',
+                              token: {
+                                type: 'reserved',
+                                position: { line: 1, character: 27 },
+                                value: 'real'
+                              }
+                            }
+                          }
+                        },
+                        rhs: {
+                          type: 'var',
+                          token: {
+                            type: 'ident-var',
+                            position: { line: 7, character: 15 },
+                            value: 'E'
+                          },
+                          isInParam: true,
+                          isInput: false,
+                          name: 'E',
+                          valueType: {
+                            type: 'number',
+                            token: {
+                              type: 'reserved',
+                              position: { line: 1, character: 18 },
+                              value: 'real'
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              type: 'class',
+              token: {
+                type: 'reserved',
+                position: { line: 9, character: 3 },
+                value: 'call'
+              },
+              name: '2',
+              fieldList: [],
+              body: [
+                {
+                  type: 'method',
+                  token: {
+                    type: 'reserved',
+                    position: { line: 9, character: 3 },
+                    value: 'call'
+                  },
+                  body: [
+                    {
+                      type: 'call',
+                      token: {
+                        type: 'reserved',
+                        position: { line: 9, character: 3 },
+                        value: 'call'
+                      },
+                      module: 'for',
+                      input: {
+                        type: 'object',
+                        token: {
+                          type: 'reserved',
+                          position: { line: 9, character: 13 },
+                          value: '{'
+                        },
+                        member: [
+                          {
+                            type: 'member',
+                            token: {
+                              type: 'ident-var',
+                              position: { line: 9, character: 14 },
+                              value: 'B1'
+                            },
+                            value: {
+                              type: 'var',
+                              token: {
+                                type: 'ident-var',
+                                position: { line: 9, character: 14 },
+                                value: 'B1'
+                              },
+                              isInParam: false,
+                              isInput: false,
+                              name: 'B1',
+                              valueType: {
+                                type: 'dummy',
+                                token: {
+                                  type: 'ident-var',
+                                  position: { line: 9, character: 14 },
+                                  value: 'B1'
+                                }
+                              }
+                            }
+                          },
+                          {
+                            type: 'member',
+                            token: {
+                              type: 'ident-var',
+                              position: { line: 9, character: 18 },
+                              value: 'E'
+                            },
+                            value: {
+                              type: 'var',
+                              token: {
+                                type: 'ident-var',
+                                position: { line: 9, character: 18 },
+                                value: 'E'
+                              },
+                              isInParam: true,
+                              isInput: false,
+                              name: 'E',
+                              valueType: {
+                                type: 'dummy',
+                                token: {
+                                  type: 'ident-var',
+                                  position: { line: 9, character: 18 },
+                                  value: 'E'
+                                }
+                              }
+                            }
+                          },
+                          {
+                            type: 'member',
+                            token: {
+                              type: 'ident-var',
+                              position: { line: 9, character: 21 },
+                              value: 'S'
+                            },
+                            value: {
+                              type: 'var',
+                              token: {
+                                type: 'ident-var',
+                                position: { line: 9, character: 21 },
+                                value: 'S'
+                              },
+                              isInParam: true,
+                              isInput: false,
+                              name: 'S',
+                              valueType: {
+                                type: 'dummy',
+                                token: {
+                                  type: 'ident-var',
+                                  position: { line: 9, character: 21 },
+                                  value: 'S'
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      output: {
+                        type: 'object',
+                        token: {
+                          type: 'reserved',
+                          position: { line: 9, character: 25 },
+                          value: '{'
+                        },
+                        member: [
+                          {
+                            type: 'member',
+                            token: {
+                              type: 'ident-var',
+                              position: { line: 9, character: 26 },
+                              value: 'N'
+                            },
+                            value: {
+                              type: 'var',
+                              token: {
+                                type: 'ident-var',
+                                position: { line: 9, character: 26 },
+                                value: 'N'
+                              },
+                              isInParam: true,
+                              isInput: false,
+                              name: 'N',
+                              valueType: {
+                                type: 'dummy',
+                                token: {
+                                  type: 'ident-var',
+                                  position: { line: 9, character: 26 },
+                                  value: 'N'
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          when: {
+            type: 'call-expr',
+            token: {
+              type: 'reserved',
+              position: { line: 7, character: 12 },
+              value: '=<'
+            },
+            callee: 'LE',
+            lhs: {
+              type: 'call-expr',
+              token: {
+                type: 'reserved',
+                position: { line: 7, character: 9 },
+                value: '+'
+              },
+              callee: 'add',
+              lhs: {
+                type: 'var',
+                token: {
+                  type: 'ident-var',
+                  position: { line: 7, character: 8 },
+                  value: 'B'
+                },
+                isInParam: true,
+                isInput: false,
+                name: 'B',
+                valueType: {
+                  type: 'number',
+                  token: {
+                    type: 'reserved',
+                    position: { line: 1, character: 9 },
+                    value: 'real'
+                  }
+                }
+              },
+              rhs: {
+                type: 'var',
+                token: {
+                  type: 'ident-var',
+                  position: { line: 7, character: 10 },
+                  value: 'S'
+                },
+                isInParam: true,
+                isInput: false,
+                name: 'S',
+                valueType: {
+                  type: 'number',
+                  token: {
+                    type: 'reserved',
+                    position: { line: 1, character: 27 },
+                    value: 'real'
+                  }
+                }
+              }
+            },
+            rhs: {
+              type: 'var',
+              token: {
+                type: 'ident-var',
+                position: { line: 7, character: 15 },
+                value: 'E'
+              },
+              isInParam: true,
+              isInput: false,
+              name: 'E',
+              valueType: {
+                type: 'number',
+                token: {
+                  type: 'reserved',
+                  position: { line: 1, character: 18 },
+                  value: 'real'
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
