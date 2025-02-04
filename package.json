@@ -24,5 +24,8 @@
     "testPathIgnorePatterns": [
       "<rootDir>/dist/"
     ]
+  },
+  "dependencies": {
+    "decimal.js": "^10.5.0"
   }
 }
