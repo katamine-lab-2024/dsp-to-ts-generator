@@ -85,8 +85,6 @@ node dist/main.js [DSPコードのファイル名] > [出力するファイル�
 
 このコードは、以下の GitHub に載せています。
 
-```
 https://github.com/katamine-lab-2024/dsp-to-ts-generator
-```
 
 もしかしたら個人的にリファクタ等しているかもしれないです。
