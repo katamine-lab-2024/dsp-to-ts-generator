@@ -80,3 +80,13 @@ node dist/main.js [DSPコードのファイル名] > [出力するファイル�
 ├── README.md         … 本ファイル
 └── tsconfig.json     … TypeScript設定
 ```
+
+## 📍 その他
+
+このコードは、以下の GitHub に載せています。
+
+```
+https://github.com/katamine-lab-2024/dsp-to-ts-generator
+```
+
+もしかしたら個人的にリファクタ等しているかもしれないです。

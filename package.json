@@ -1,5 +1,5 @@
 {
-  "name": "dsp-js",
+  "name": "dsp-to-ts-generator",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
