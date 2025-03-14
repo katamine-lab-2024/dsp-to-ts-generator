@@ -51,6 +51,21 @@ const classifyStatements = (
           operands.push(
             ...collectVariables(innerStmt.rhs.expr, (v) => !v.isInput)
           );
+        if (innerStmt.rhs.type === NODE_TYPE.NTH)
+          operands.push(
+            ...collectVariables(innerStmt.rhs.index, (v) => !v.isInput)
+          );
+        if (innerStmt.rhs.type === NODE_TYPE.CASE) {
+          const os = innerStmt.rhs.body.flatMap((b) => {
+            const c = collectVariables(b.cond, (v) => !v.isInput);
+            const e = collectVariables(b.expr, (v) => !v.isInput);
+            // cとeの重複を削除
+            return c.concat(e).filter((v, i, self) => {
+              return self.findIndex((s) => s.name === v.name) === i;
+            });
+          });
+          operands.push(...os);
+        }
         categories.calc.push({
           type: "stmt-block",
           token: s.token,
@@ -220,6 +235,12 @@ const margeCalcTest = (sorted: StmtBlock[], otherList?: StmtBlock[]) => {
         const c = sorted[j];
         if (!c) break;
         if (c.phase === "calc") {
+          // もしcがcaseの場合は、そこで終了させる
+          const cinner = c.body.filter((b) => b.type !== "dummy")[0].stmt;
+          if (cinner.type === "assign" && cinner.rhs.type === "case") {
+            j++;
+            break;
+          }
           const body = c.body.concat(merged.body);
           sorted.splice(j + 1, 1);
           merged = { ...c, body };

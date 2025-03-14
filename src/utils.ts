@@ -93,27 +93,24 @@ const reset = "\u001b[0m";
  * @returns {void}
  */
 export const reportError = (errorList: CompileError[]): void => {
+  const prefix = `[${red}ERROR${reset}] `;
+  const content: string[] = ["\n"];
   for (const e of errorList) {
-    const prefix = `[${red}ERROR${reset}] `;
     // エラーが発生した行の内容を取得
     const errorLine = inputForReport.find(
       (l) => l.num === e.position.line
     )?.content;
 
-    // `[ERROR]`
-    process.stderr.write(prefix);
-    // `ファイル名:行番号:文字位置 エラーメッセージ`
-    process.stderr.write(
-      `${filename}:${e.position.line}:${e.position.character} ${e.message}\n`
-    );
-    // エラーが発生した行の内容
-    process.stderr.write(`${" ".repeat(4)}${errorLine}\n`);
-    // エラーが発生した位置
-    process.stderr.write(`${" ".repeat(3 + e.position.character)}^\n`);
-
-    // 最後尾以外のエラーを改行
-    if (errorList.indexOf(e) !== errorList.length - 1) {
-      process.stderr.write("\n");
-    }
+    const c = [
+      prefix,
+      `${filename}:${e.position.line}:${e.position.character} ${e.message}\n`,
+      `${" ".repeat(4)}${errorLine}\n`,
+      `${" ".repeat(3 + e.position.character)}^\n`,
+      "\n",
+    ];
+    content.push(...c);
   }
+  // 最後の改行を削除
+  content.pop();
+  console.error(content.join(""));
 };

@@ -1,3 +1,5 @@
+% 梅田先生の論文内のdspサンプルコード
+
 pointInQuarterCircle({R : real}, {X : real, Y : real})
 	method
 		X : real = for(0.0, R, 1.0);

@@ -1,0 +1,35 @@
+@startuml select
+interface Predicate {
+  + exec(vm: VM): Predicate
+}
+
+class Select<T> implements Predicate {
+  - x: Variable<T>
+  - list: List<T>
+  - cont: Predicate
+  + constructor(x: Variable<T>, list: List<T>, cont: Predicate)
+  + exec(vm: VM): Predicate
+}
+
+class Method_1 implements Predicate {
+  - i: number
+  + exec(vm: VM): Predicate
+}
+
+class Method_1_cu1 implements Predicate {
+  + exec(vm: VM): Predicate
+}
+
+note top of Method_1_cu1 : xにlistのi番目の要素を代入し、\nMethod_1_cu2を選択肢に登録する
+
+class Method_1_cu2 implements Predicate {
+  + exec(vm: VM): Predicate
+}
+
+note top of Method_1_cu2 : xにlistのi+1番目の要素を代入可能か判定し、\n可能なら自身を選択肢から削除してMethod_1_cu1を呼び出し、\n不可能なら失敗を返す
+
+Select +-- Method_1
+Method_1 +-- Method_1_cu1
+Method_1 +-- Method_1_cu2
+
+@enduml

@@ -1,0 +1,71 @@
+@startuml Predicate
+' インターフェースの定義
+interface Predicate {
+  + exec(vm: VM): Predicate
+}
+
+' TotalHeatDissipationClass の抽象化
+class 機器Class implements Predicate {
+  - 入力変数1
+  - 入力変数2
+    ...
+  - 出力変数1
+  - 出力変数2
+    ...
+  - cont: Predicate
+  + constructor(入力変数1, 入力変数2, ..., 出力変数1, 出力変数2, ...)
+  + exec(vm: VM): Predicate
+}
+
+class メソッドClass implements Predicate {
+  - メソッド内で定義される変数1
+  - メソッド内で定義される変数2
+    ...
+  - 属性1クラスのインスタンス
+  - 属性2クラスのインスタンス
+    ...
+  - cont: Predicate
+  + exec(vm: VM): Predicate
+}
+
+class 属性Class implements Predicate {
+  + exec(vm: VM): Predicate
+}
+
+' VM クラスの定義（バックトラッキングの実行環境）
+class VM {
+  + setChoicePoint(c: Predicate): void
+  + getChoicePoint(): Predicate
+  + popChoicePoint(): void
+  + jtry(first: Predicate, second: Predicate): Predicate
+  + call(p: Predicate): boolean
+  + redo(): boolean
+}
+
+' List と Variable は基本的なデータ型を管理するユーティリティ
+' class List<T> {
+'   + getLength(): number
+'   + getByIndex(i: number): T
+' }
+
+' class Variable<T> {
+'   + getValue(): T
+'   + setValue(value: T): void
+' }
+
+' Main 関数を含むクラス（エントリーポイント）
+class Main {
+  + main(input: InputData): Result[]
+}
+
+' 関係性の定義
+' 機器Class ..> List : uses
+' 機器Class ..> Variable : uses
+機器Class ..> VM : uses
+機器Class "1" +-- "1..*" メソッドClass
+メソッドClass "1" +-- "1..*" 属性Class
+
+Main ..> 機器Class : creates
+Main ..> VM : creates
+
+@enduml

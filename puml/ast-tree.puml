@@ -1,0 +1,31 @@
+@startmindmap ast-tree
+* module
+** paramList: [...]
+** block [...]
+*** stmt: assign
+**** lhs: var
+***** name: "X"
+***** valueType: real
+**** rhs: for
+***** from: num (0)
+***** to: var
+****** name: "R"
+****** valueType: real
+***** inc: num (1)
+*** stmt: assign
+**** lhs: var
+***** name: "D"
+***** valueType: real
+**** rhs: sqrt
+***** expr: call-expr
+****** callee: "add"
+****** lhs: call-expr
+******* callee: "pow"
+******** lhs: var ("X")
+******** rhs: num (2)
+****** rhs: call-expr
+******* callee: "pow"
+******** lhs: var ("Y")
+******** rhs: num (2)
+***** ... (その他の stmt)
+@endmindmap

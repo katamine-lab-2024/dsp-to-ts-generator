@@ -1,5 +1,0 @@
-sample({R : r}, {X : {r, r}})
-	method
-	    X: {r, r} = {R, R};
-	end method;
-end module;

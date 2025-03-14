@@ -1,0 +1,113 @@
+@startuml class
+' インターフェースの定義
+interface Predicate {
+  + exec(vm: VM): Predicate
+}
+
+' TotalHeatDissipationClass の抽象化
+class TotalHeatDissipationClass implements Predicate {
+  - _ModelList: List<string>
+  - _cdwWList: List<number>
+  - _ENV_OADB: number
+  - _OARHexit: number
+  - _OARHent: number
+  - _cdwTentList: List<number>
+  - _PinList: List<number>
+  - _PspecList: List<number>
+  - _GspecList: List<number>
+  - _RadspecList: List<number>
+  - _Rade: number
+  - _LF: number
+  - _cdwTexit: number
+  - _apT: number
+  - cont: Predicate
+  + constructor(_ModelList: List<string>, ..., _apT: number)
+  + exec(vm: VM): Predicate
+}
+
+class Method_1 implements Predicate {
+  - Num: number
+  - _Pin: number
+  - _Pspec: number
+  - _Gspec: number
+  - _Radspec: number
+  - _cdwTent: number
+  - _cdwW: number
+  - _飽和水蒸気圧h2: number
+  - _飽和水蒸気圧h1: number
+  - _水蒸気分圧h2: number
+  - _水蒸気分圧: number
+  - _OAAHexit: number
+  - _OAAHent: number
+  - _ENexit: number
+  - _ENin: number
+  - _idealG: number
+  - _heatH: number
+  - _idealRad: number
+  - _Rade: number
+  - _ENV_OAWB: number
+  - _cdwTexit: number
+  - _constraint_cdwTexit: boolean
+  - _apT: number
+  - method_1_cu_1: Predicate
+  - method_1_cu_2: Predicate
+  - method_1_cu_3: Predicate
+  - method_1_cu_4: Predicate
+  + exec(vm: VM): Predicate
+}
+
+class Method_1_cu_1 implements Predicate {
+  + exec(vm: VM): Predicate
+}
+
+class Method_1_cu_2 implements Predicate {
+  + exec(vm: VM): Predicate
+}
+
+class Method_1_cu_3 implements Predicate {
+  + exec(vm: VM): Predicate
+}
+
+class Method_1_cu_4 implements Predicate {
+  + exec(vm: VM): Predicate
+}
+
+' VM クラスの定義（バックトラッキングの実行環境）
+class VM {
+  + setChoicePoint(c: Predicate): void
+  + getChoicePoint(): Predicate
+  + popChoicePoint(): void
+  + call(p: Predicate): boolean
+  + redo(): boolean
+}
+
+' List と Variable は基本的なデータ型を管理するユーティリティ
+' class List<T> {
+'   + getLength(): number
+'   + getByIndex(i: number): T
+' }
+
+' class Variable<T> {
+'   + getValue(): T
+'   + setValue(value: T): void
+' }
+
+' Main 関数を含むクラス（エントリーポイント）
+class Main {
+  + main(input: InputData): Result[]
+}
+
+' 関係性の定義
+' 機器Class ..> List : uses
+' 機器Class ..> Variable : uses
+TotalHeatDissipationClass ..> VM : uses
+TotalHeatDissipationClass +-- Method_1
+Method_1 +-- Method_1_cu_1
+Method_1 +-- Method_1_cu_2
+Method_1 +-- Method_1_cu_3
+Method_1 +-- Method_1_cu_4
+
+Main ..> TotalHeatDissipationClass : creates
+Main ..> VM : creates
+
+@enduml

@@ -65,6 +65,7 @@ class CodeGenerator {
       'import { Variable } from "./Variable";',
       'import { List } from "./List";',
       'import { VObject } from "./Object";',
+      'import { Case } from "./Case";',
       'import { VM } from "./VM";',
       'import { For } from "./For";',
       'import { Member } from "./Member";',
@@ -199,11 +200,31 @@ class CodeGenerator {
     let exec: string[] = [];
 
     if (blockList.length === 1) {
+      let whenStmt: undefined | string;
+      if (blockList[0].when) {
+        let condStr = this.exprGen(blockList[0].when, {
+          isVarRef: false,
+          isString: false,
+        });
+        if (condStr.includes("outerThis"))
+          condStr = condStr.replaceAll("outerThis", "this");
+        whenStmt = [
+          `    const method_${blockList[0].name} = (function() {
+          if (!(${condStr})) {
+             return Predicate.failure;
+          }
+          return new this.Method_${blockList[0].name}();
+        }).call(this)`,
+          `      return vm.jtry(method_${blockList[0].name}, this.cont);`,
+        ].join("\n");
+      }
       exec = [
         "  public exec(vm: VM): Predicate {",
-        ...blockList.map(
-          (block) => `    return new this.Method_${block.name}().exec(vm);`
-        ),
+        ...(whenStmt
+          ? [whenStmt]
+          : blockList.map(
+              (block) => `    return new this.Method_${block.name}().exec(vm);`
+            )),
         "  }",
         "",
       ];
@@ -417,13 +438,21 @@ class CodeGenerator {
         const ths = (stmt.lhs as VarNode).isInParam
           ? "outerThis"
           : "methodThis";
+        let rhs = this.buildInGen(stmt.rhs, cont);
+        // もしrhsの末尾に`getValue()`が無い時は、`getValue()`を付ける
+        if (
+          !/[=<>!]/.test(rhs) &&
+          !rhs.includes("Decimal") &&
+          !rhs.endsWith("getValue()")
+        )
+          rhs += ".getValue()";
         return [
           `                ${ths}.${
             (stmt.lhs as VarNode).name
-          }.setValue(${this.buildInGen(stmt.rhs, cont)});`,
-          // `                console.log("${
-          //   (stmt.lhs as VarNode).name
-          // }: ", ${ths}.${(stmt.lhs as VarNode).name}.getValue());`,
+          }.setValue(${rhs});`,
+          `                console.log("${
+            (stmt.lhs as VarNode).name
+          }: ", ${ths}.${(stmt.lhs as VarNode).name}.getValue());`,
         ].join("\n");
       }
       case "return": {
@@ -497,6 +526,39 @@ class CodeGenerator {
           ")",
         ].join("");
       }
+      case "case": {
+        const target = buildIn.target
+          ? this.primaryGen(buildIn.target, { isVarRef: true })
+          : "";
+        const cond = this.exprGen(buildIn.cond, {
+          isVarRef: false,
+          isString: false,
+        });
+        const thn = this.exprGen(buildIn.thn, {
+          isVarRef: false,
+          isString: false,
+        });
+        const els = buildIn.else
+          ? buildIn.else.map((e) => ({
+              cond: this.exprGen(e.cond, {
+                isVarRef: false,
+                isString: false,
+              }),
+              thn: this.exprGen(e.thn, {
+                isVarRef: false,
+                isString: false,
+              }),
+            }))
+          : [];
+        return [
+          `new Case(${target}, [{ cond: ${cond}, expr: ${thn} }, ${
+            els.length === 0
+              ? ""
+              : els.map((e) => `{ cond: ${e.cond}, expr: ${e.thn}}`).join(", ")
+          }]`,
+          `, ${cont})`,
+        ].join("");
+      }
       default:
         return this.exprGen(buildIn, { isVarRef: false, isString: false });
     }
@@ -511,6 +573,10 @@ class CodeGenerator {
         ? `new Decimal('${exprStr}')`
         : expr.type === "var"
         ? `new Decimal(${exprStr})`
+        : expr.type === "nth" ||
+          expr.type === "length" ||
+          expr.type === "list-sum"
+        ? `new Decimal(${exprStr}.toString())`
         : exprStr;
     return wrapped;
   }
@@ -594,7 +660,13 @@ class CodeGenerator {
       case "string":
         return `'${primary.token.value}'`;
       case "boolean":
-        return primary.token.value;
+        return primary.token.value === "true" ? "true" : "false";
+      case "list": {
+        const member = primary.member.map((m) =>
+          this.primaryGen(m, { isVarRef: false, isString: false })
+        );
+        return ["[", ...member, "]"].join("\n");
+      }
       case "var": {
         const ths = primary.isInParam ? "outerThis" : "methodThis";
         let value = "";
@@ -619,6 +691,26 @@ class CodeGenerator {
           "Decimal.exp(",
           ...this.exprGen(primary.expr, option),
           ")",
+        ].join("");
+      }
+      case "length": {
+        return [
+          this.primaryGen(primary.list, { isVarRef: true }),
+          ".getLength()",
+        ].join("");
+      }
+      case "nth": {
+        return [
+          this.primaryGen(primary.list, { isVarRef: true }),
+          ".getByIndex(",
+          ...this.exprGen(primary.index, { isVarRef: false, isString: false }),
+          ")",
+        ].join("");
+      }
+      case "list-sum": {
+        return [
+          this.primaryGen(primary.list, { isVarRef: true }),
+          ".getSum()",
         ].join("");
       }
       case "call-expr": {

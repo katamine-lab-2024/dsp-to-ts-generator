@@ -1,0 +1,22 @@
+% 運用シミュレーション:合流計算
+% 卒論の実験で使用
+
+conf (
+  {
+    _入口流量: [real],
+    _入口温度: [real],
+    _接続元台数: integer,
+  },
+  {
+    _合流流量: real,
+    _合流温度: real
+  })
+  method
+    when(_入口温度 \= []);
+    Num: integer = for(1, length(_入口温度), 1);
+    _合流流量: real = nth(Num, _入口流量);
+    _合流温度: real = case(sum(_入口流量) \= 0.0 ->
+      nth(Num, _入口温度) * nth(Num, _入口流量) / sum(_入口流量),
+      true -> 0.0);
+  end method;
+end module;

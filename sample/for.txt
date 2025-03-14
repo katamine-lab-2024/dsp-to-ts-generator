@@ -1,3 +1,5 @@
+% 梅田先生の論文内のdspサンプルコード(非決定性処理)
+
 for({B: real, E: real, S: real}, {N: real})
 	method
 		when(B =< E);
