@@ -1,8 +1,8 @@
-# 2024 年度卒業研究「属性モデルに基づくプログラム表現から Typescript への変換ツールの試作」変換器
+# 2024 年度卒業研究「属性モデルに基づくプログラム表現から Typescript への変換ツールの試作」
 
-これは、中村優希が卒業研究で作成した、DSP コードから TypeScript を生成する変換器です。
+これは、中村優希が卒業研究で作成した、DSP コードから TypeScript を生成するモジュールです。
 
-変換ツールについては、「test-dsp-js」を参照してください。
+変換ツールについては、「[test-run-dsp-in-browser](https://github.com/katamine-lab-2024/dsp-to-ts-generator)」を参照してください。
 
 ## 🚀 概要
 
